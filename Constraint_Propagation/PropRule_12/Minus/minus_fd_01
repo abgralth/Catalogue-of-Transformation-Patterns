@@ -1,0 +1,36 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a functional dependency Y -> Z after a set difference
+
+%We start with one FD in both R1, R2 and see that their set difference preserves it in R
+%Now, in truth this depends a lot of the population of R1 and R2 as R ranges from R1 to empty, but nevertheless the FD would still hold in R.
+
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R1(x,y,z) & R1(x1,y,z1))-> z=z1).
+all x all y all z all x1 all z1 ((R2(x,y,z) & R2(x1,y,z1))-> z=z1).
+
+%MAPPINGS A TO B
+all x all y all z (R(x,y,z) <-> R1(x,y,z) & -R2(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1))-> z=z1).
+
+end_of_list.
+

@@ -1,0 +1,48 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a covering[R,{R1,R2}] after a set difference
+
+%The undelying idea is rather simple, if we remove from each relation the same subset of tuples then the covering remain, only over a lesser
+%population. Since we don't know the relations between Y,Z and T, having as a minus table something like R4(X,T) is prone to issue as it may
+%only affect one of the three table R,R1,R2 where a match over the second attribute is possible.
+
+%CONSTRAINT A
+%Cover
+all x all y (R(x,y) -> exists z exists t (R1(x,z) | R2(x,t))).
+
+%Disjoint
+%all x all z all t (-R1(x,z) | -R2(x,t)).
+%Inclusion Dependency
+%all x all z (R1(x,z) -> exists y R(x,y)).
+%all x all t (R2(x,t) -> exists y R(x,y)).
+
+%MAPPINGS A TO B
+%all x all y (S(x,y) <-> R(x,y) & -R3(x)).
+%all x all z (S1(x,z) <-> R1(x,z) & -R3(x)).
+%all x all t (S2(x,t) <-> R2(x,t) & -R3(x)).
+
+all x all y (S(x,y) <-> exists u (R(x,y) & -R3(x,u))).
+all x all z (S1(x,z) <-> exists u (R1(x,z) & -R3(x,u))).
+all x all t (S2(x,t) <-> exists u (R2(x,t) & -R3(x,u))).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y (S(x,y) -> exists z exists t (S1(x,z) | S2(x,t))).
+
+end_of_list.
+

@@ -1,0 +1,139 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, -1).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%Why not just try the full example?
+%Pursuing with VDs over each partitions, ignoring Rp(a,b) for the moment
+%We check for each decomposition separately since doing it all at once reahes memory limits.
+%Testing only for the decomposition of Rc1 takes forever when checking for equivalence.
+%As such, like we did in some other proof, we check for both side of the equivalence separately
+
+%We get a proof for -> in ~18 seconds and another for <- in 0.01 seconds for Rc1 decomposition
+%Memory limit, too long, the experience ends here and shows how much propagation rules are required to make this method work.
+
+%CONSTRAINT A
+%Primary Key
+
+%pk[Rc1](a)
+%all a all b all c all d all b1 all c1 all d1 ((Rc1(a,b,c,d) & Rc1(a,b1,c1,d1)) -> (b=b1 & c=c1 & d=d1)).
+%pk[Rc2](a)
+%all a all b all c all d all g all h all b1 all c1 all d1 all g1 all h1 
+%((Rc2(a,b,c,d,g,h) & Rc2(a,b1,c1,d1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & g=g1 & h=h1)).
+
+%Functional Dependencies
+%fd[Rc1](c,d)
+%all a all b all c all d all a1 all b1 all d1 ((Rc1(a,b,c,d) & Rc1(a1,b1,c,d1)) -> d=d1).
+
+%fd[Rc2](c,d)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> d=d1).
+
+%fd[Rc2](c,g)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> g=g1).
+
+%fd[Rc2](g,h)
+all a all b all c all d all g all h all a1 all b1 all c1 all d1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c1,d1,g,h1)) -> h=h1).
+
+%CONSTRAINT B
+%Primary Key
+%pk[Rc1p](a)
+%all a all b all c all b1 all c1 ((Rc1p(a,b,c) & Rc1p(a,b1,c1) ) -> (b=b1 & c=c1)).
+
+%pk[Rd1](c)
+%all c all d all d1 ((Rd1(c,d) & Rd1(c,d1) ) -> d=d1).
+
+%pk[Rc2p](a)
+%all a all b all c all b1 all c1 ((Rc2p(a,b,c) & Rc2p(a,b1,c1) ) -> (b=b1 & c=c1)).
+
+%pk[Rd2](c)
+all c all d all d1 ((Rd2(c,d) & Rd2(c,d1) ) -> d=d1).
+
+%pk[Rg](c)
+all c all g all g1 ((Rg(c,g) & Rg(c,g1) ) -> g=g1).
+
+%pk[Rh](g)
+all g all h all h1 ((Rh(g,h) & Rh(g,h1) ) -> h=h1).
+
+%Inclusion Dependencies
+%ind^=[Rc1p, Rd1]
+%all a all b all c (Rc1p(a,b,c) -> exists d Rd1(c,d)).
+%all c all d (Rd1(c,d) -> exists a exists b Rc1p(a,b,c)).
+
+%ind^=[Rc2p, Rd2]
+all a all b all c (Rc2p(a,b,c) -> exists d Rd2(c,d)).
+all c all d (Rd2(c,d) -> exists a exists b Rc2p(a,b,c)).
+
+%ind^=[Rc2p, Rg]
+all a all b all c (Rc2p(a,b,c) -> exists g Rg(c,g)).
+all c all g (Rg(c,g) -> exists a exists b Rc2p(a,b,c)).
+
+%ind^=[Rg,Rh]
+all c all g (Rg(c,g) -> exists h Rh(g,h)).
+all g all h (Rh(g,h) -> exists c Rg(c,g)).
+
+%MAPPINGS A TO B
+%all a all b all c (Rc1p(a,b,c) <-> exists d Rc1(a,b,c,d)).
+%all c all d (Rd1(c,d) <-> exists a exists b Rc1(a,b,c,d)).
+all a all b all c (Rc2p(a,b,c) <-> exists d exists g exists h Rc2(a,b,c,d,g,h)).
+all c all d (Rd2(c,d) <-> exists a exists b exists g exists h Rc2(a,b,c,d,g,h)).
+all c all g (Rg(c,g) <-> exists a exists b exists d exists h Rc2(a,b,c,d,g,h)).
+all g all h (Rh(g,h) <-> exists a exists b exists c exists d Rc2(a,b,c,d,g,h)).
+
+%MAPPINGS B TO A
+
+%all a all b all c all d (Rc1(a,b,c,d) <-> Rc1p(a,b,c) & Rd1(c,d)).
+all a all b all c all d all g all h (Rc2(a,b,c,d,g,h) <-> Rc2p(a,b,c) & Rd2(c,d) & Rg(c,g) & Rh(g,h)).
+
+end_of_list.
+
+formulas(goals).
+
+%Rc1 decomposition (checking <- as it's the faster)
+%(
+%((Rc1(a,b,c,d) & Rc1(a,b1,c1,d1)) -> (b=b1 & c=c1 & d=d1))
+%&((Rc1(a,b,c,d) & Rc1(a1,b1,c,d1)) -> d=d1)
+%&(Rc1p(a,b,c) <-> exists d Rc1(a,b,c,d))
+%&(Rd1(c,d) <-> exists a exists b Rc1(a,b,c,d)))
+%<-
+%(((Rc1p(a,b,c) & Rc1p(a,b1,c1) ) -> (b=b1 & c=c1))
+%&((Rd1(c,d) & Rd1(c,d1) ) -> d=d1)
+%&(Rc1p(a,b,c) -> exists d Rd1(c,d))
+%&(Rd1(c,d) -> exists a exists b Rc1p(a,b,c))
+%&(Rc1(a,b,c,d) <-> Rc1p(a,b,c) & Rd1(c,d))
+%)
+
+%&
+
+%Rc2 decomposition hits memory limits, so let's split the full equivalence goal into independent subgoals
+%Propagation of pk[Rc2](a)
+(
+((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> d=d1)
+&(Rc2p(a,b,c) <-> exists d exists g exists h Rc2(a,b,c,d,g,h))
+&(Rd2(c,d) <-> exists a exists b exists g exists h Rc2(a,b,c,d,g,h))
+%&(Rg(c,g) <-> exists a exists b exists d exists h Rc2(a,b,c,d,g,h))
+%&(Rh(g,h) <-> exists a exists b exists c exists d Rc2(a,b,c,d,g,h))
+)
+<->
+(
+((Rd2(c,d) & Rd2(c,d1) ) -> d=d1)
+&(Rc2p(a,b,c) -> exists d Rd2(c,d))
+&(Rd2(c,d) -> exists a exists b Rc2p(a,b,c))
+&(Rc2(a,b,c,d,g,h) <-> Rc2p(a,b,c) & Rd2(c,d) & Rg(c,g) & Rh(g,h))
+)
+.
+
+end_of_list.
+

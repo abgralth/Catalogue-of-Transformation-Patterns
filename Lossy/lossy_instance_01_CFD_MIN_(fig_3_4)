@@ -1,0 +1,59 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossy TP for Tuple Reconstituation from Condtional Functional Dependencies
+%Its purpose is principally, in a table R:(x,y,z) containg a CFD y->z (z != null) to merge tuples {x1,y1,z1}, {x2,y1, NULL} into the new pair
+%{x1, y1, z1} and {x2, y1, z1}.
+%The mapping itself, while not quite trivial can easily be written in SQL, so hopefully we can get something similar here
+%Since it's lossy, we principally check if the FD hold in the target schema, thus confirming that only instances of R are lost
+
+%CONSTRAINT A
+all x all y all z all x1 all z1 (R(x,y,z) & R(x1,y,z1) & (z != $F) -> z=z1).
+exists x exists y exists z (R(x,y,z) -> z = $F).
+
+%CONSTRAINT B
+%all x all y all z all x1 all z1 (Rp(x,y,z) & Rp(x1,y,z1) & (z != $F) -> z=z1).
+
+%MAPPINGS A TO B
+
+all x all y all z (exists z1 Rp(x,y,z1) <-> ((R(x,y,z) & (R(x, y, z) & (z != $F))))
+| (exists z1 (R(x,y,z1)  & -(R(x, y, z) & (z != $F))) & (exists x1 exists y1 R(x1,y1,z) & z = $F))).
+
+%all x all y all z (Rp(x,y,z) <-> (R(x,y,z) & (R(x,y,z) & (z != $F)))
+%| (R(x,y,z) & )
+%)
+
+%I'm not super confident with this one.
+%Mostly because it's seems difficult, not so say impossible, to translate the outer union employed into FOL.
+%If a better way exists, then I'm unfamiliar with it at the moment
+
+end_of_list.
+
+formulas(goals).
+
+%Constraint Propagation Cs U Mst |= Ct
+((exists x exists y exists z (Rp(x,y,z) -> z = $F))
+&(all x all y all z all x1 all z1 (Rp(x,y,z) & Rp(x1,y,z1) & (z != $F) -> z=z1)))
+%Ct U Mc |= Cs, with Mc the trivial complement R
+&
+((exists x exists y exists z (Rp(x,y,z) -> z = $F))
+&(Rp(x,y,z) & Rp(x1,y,z1) & (z != $F) -> z=z1)
+&(R(x,y,z) & R(x,y,z) | Rp(x,y,z)))
+->
+((R(x,y,z) & R(x1,y,z1) & (z != $F) -> z=z1)
+&(exists x exists y exists z (R(x,y,z) -> z = $F)))
+.
+
+end_of_list.
+

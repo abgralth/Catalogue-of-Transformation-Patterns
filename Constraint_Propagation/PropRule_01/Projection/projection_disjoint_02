@@ -1,0 +1,46 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a disjoint[R1,R2]
+%In this case, by adding a couple of guard constraint, we somehow made explicit the nature of the disjointness as coming from Y, allowing us
+%to propagate it into S1,S2.
+%This, or perhaps, more likely, we reconstructed the disjointness between S1 and S2 based on their opposite polarity on Y.
+
+%CONSTRAINT A
+%Disjoint
+all x all y all z (-R1(x,y,z) | -R2(x,y,z)).
+
+%Guard Dependency
+all x all y all z (R1(x,y,z) -> y = cond).
+all x all y all z (R2(x,y,z) -> -(y = cond)).
+
+%MAPPINGS A TO B
+all x all y (S1(x,y) <-> exists z (R1(x,y,z))).
+all x all y (S2(x,y) <-> exists z (R2(x,y,z))).
+
+end_of_list.
+
+formulas(goals).
+
+(
+%Guard Propagation
+(S1(x,y) -> y = cond)
+&(S2(x,y) -> -(y = cond))
+%Disjoint Propagation
+&(-S1(x,y) | -S2(x,y))
+).
+
+end_of_list.
+

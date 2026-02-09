@@ -1,0 +1,35 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Trying to come up with a good proof
+
+%CONSTRAINT A
+
+%MAPPINGS A TO B
+all x all y all z (R(x) <-> (S1(x) | S2(x))).
+
+end_of_list.
+
+formulas(goals).
+
+((S1(x) -> (x = cond))
+&(S2(x) -> -(x = cond)))
+<->
+((S1(x) <-> R(x) & (x = cond))
+&(S2(x) <-> R(x) & -(x = cond))).
+
+end_of_list.
+

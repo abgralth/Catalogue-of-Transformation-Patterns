@@ -1,0 +1,36 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a cover[R,{R1,R2}](X)
+%In this case, we remove an attribute from R1 which is not X
+
+%CONSTRAINT A
+%Covering
+
+all x all y (R(x,y) -> exists z R1(x,z) | exists t R2(x,t)).
+
+%MAPPINGS A TO B
+all x all y (S(x,y) <-> exists y R(x,y)).
+all x (S1(x) <-> exists z R1(x,z)).
+all x all t (S2(x,t) <-> (R2(x,t))).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y (S(x,y) -> exists z S1(x) | exists t S2(x,t)).
+
+end_of_list.
+

@@ -1,0 +1,78 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Merging Guards should be pretty straigthforward
+%This time playing around with composite conditions, we can prove that the greatest common condition between two, or more as in PRESET 3, 
+%will always propagate in full.
+%Also works for alternating polarity as seen in PRESET 4 to some extent, as PRESET 5 fails
+
+%Oh, it's actually quite interesting. Since it is possible that y=cond in R2, the reverse mapping S1(x,y,z) <-> R(x,y,z) & (x = cond & y = cond)
+%does not work. This change if we add another condition on S2 however
+
+%CONSTRAINT A
+%Guards
+
+%PRESET 1 Containment X in XY
+all x all y all z (S1(x,y,z) -> (x = cond & y = cond)).
+all x all y all z (S2(x,y,z) -> (x = cond)).
+all x all y all z (S2(x,y,z) -> -(y = cond)).
+
+%PRESET 2 Non-Distinct XY and XZ
+%all x all y all z (S1(x,y,z) -> (x = cond & y = cond)).
+%all x all y all z (S2(x,y,z) -> (x = cond & z = cond)).
+
+%PRESET 3 
+%all x all y all z (S1(x,y,z) -> (x = cond & y = cond)).
+%all x all y all z (S1(x,y,z) -> (x = cond & z = cond)).
+%all x all y all z (S2(x,y,z) -> (x = cond)).
+
+%PRESET 4
+%all x all y all z (S1(x,y,z) -> (x = cond & y = cond)).
+%all x all y all z (S2(x,y,z) -> -(x != cond)).
+
+%PRESET 5 FAILS
+%all x all y all z (S1(x,y,z) -> (x = cond & y = cond)).
+%all x all y all z (S2(x,y,z) -> -(x != cond & z != cond)).
+
+%MAPPINGS A TO B
+all x all y all z (R(x,y,z) <-> (S1(x,y,z) | S2(x,y,z))).
+
+end_of_list.
+
+formulas(goals).
+
+%Main Goal
+all x all y all z (R(x,y,z) -> (x = cond))
+&
+%Alternative Goal:
+%PRESET 1
+(exists x exists y exists z (R(x,y,z) -> (x = cond & y = cond)))
+%Check for Losslessness
+&
+((R(x,y,z) -> (x = cond))
+&(exists x exists y exists z (R(x,y,z) -> (x = cond & y = cond)))
+%What about the reverse mappings?
+&(S1(x,y,z) <-> R(x,y,z) & (x = cond & y = cond))
+&(S2(x,y,z) <-> R(x,y,z) & -( R(x,y,z) & (x = cond & y = cond))))
+<->
+((S1(x,y,z) -> (x = cond & y = cond))
+&(S2(x,y,z) -> (x = cond))
+&(R(x,y,z) <-> (S1(x,y,z) | S2(x,y,z))))
+
+.
+
+end_of_list.
+

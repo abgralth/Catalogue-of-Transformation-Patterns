@@ -1,0 +1,59 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 600).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Playing a bit around the propagation rules related to guard dependencies, I propose the following documents
+%Coming to the 8th propagation rule, we now tackle a redundancy difficult to avoid in our sequential methodology
+
+%In a simpler example, we have Y, Z and YZ nullable at once and we want to focus on the case where -(YZ = NULL) and Y = NULL.
+%In this case, what happen to Z = NULL, can it hold in S3?
+%I'm not sure, as I can easily prove that all Z in S3 must be != $F or -(Z = $F), but I can't prove the negation
+% -(exists X exists Y exists Z (S3(x,y,z) -> Z = $F)).
+%
+
+%CONSTRAINT A
+%Guards
+exists x exists y exists z (R(x,y,z) -> (y = $F)).
+exists x exists y exists z (R(x,y,z) -> (z = $F)).
+exists x exists y exists z (R(x,y,z) -> (y = $F & z = $F)).
+
+%MAPPINGS A TO B
+all x all y all z (S1(x,y,z) <-> R(x,y,z) & ((y = $F & z = $F) & (y = $F))).
+all x all y all z (S2(x,y,z) <-> R(x,y,z) & ((y = $F & z = $F) & -(y = $F))).
+all x all y all z (S3(x,y,z) <-> R(x,y,z) & (-(y = $F & z = $F) & (y = $F))).
+all x all y all z (S4(x,y,z) <-> R(x,y,z) & (-(y = $F & z = $F) & -(y = $F))).
+
+end_of_list.
+
+formulas(goals).
+
+%We skip some intermediary steps
+(
+%Some easy checks before focusing on S3
+(all x all y all z (S1(x,y,z) -> (z = $F)))
+&(all x all y all z (S2(x,y,z) -> -(y = $F)))
+&(all x all y all z (S3(x,y,z) -> (y = $F)))
+&(all x all y all z (S4(x,y,z) -> -(y = $F)))
+%We focus on S3 as it may reach lead to a contradiction:
+%Since YZ cannot both in $F in S3, and we already have Y set to $F, then having Z set to $F would lead to a contradiction
+%As such, I think we can write the following
+%&(all x all y all z (S3(x,y,z) -> -(z = $F)))
+%Alternatively, this is also equivalent to
+%&(all x all y all z (S3(x,y,z) -> (z != $F)))
+%In the end, we shown the following
+&(exists x exists y exists z (S3(x,y,z) -> (z = $F)))
+
+).
+
+end_of_list.
+

@@ -1,0 +1,99 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Vertical Decomposition
+%Here tried with an inclusion dependency; this seems more satisfying.
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1))-> z=z1).
+
+%Inclusion Dependency
+all x all t (U(x,t) -> exists y exists z R(x,y,z)).
+all x all y all z (R(x,y,z) -> exists t U(x,t)).
+
+%CONSTRAINT B
+%Inclusion Dependency 
+all x all y (S(x,y) -> exists z T(y,z)).
+all y all z (T(y,z) -> exists x S(x,y)).
+
+all x all t (V(x,t) -> exists y S(x,y)).
+all x all y (S(x,y) -> exists t V(x,t)).
+
+%Functional Dependency
+all y all z all z1 ((T(y,z) & T(y,z1)) -> z=z1).
+
+%MAPPINGS A TO B
+all x all y (S(x,y)<-> exists z R(x,y,z)).
+all y all z (T(x,y)<-> exists x R(x,y,z)).
+all x all t (V(x,t) <-> U(x,t)).
+
+%MAPPINGS B TO A
+all x all y all z (R(x,y,z) <-> S(x,y) & T(y,z)).
+all x all t (U(x,t) <-> V(x,t)).
+
+end_of_list.
+
+formulas(goals).
+
+%Let's check for Cs === Ct
+((
+(((R(x,y,z) & R(x1,y,z1))-> z=z1)
+&(S(x,y)<-> exists z R(x,y,z))
+&(T(x,y)<-> exists x R(x,y,z))
+&(V(x,t) <-> U(x,t)))
+<->
+((S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y))
+&((T(y,z) & T(y,z1)) -> z=z1)
+&(R(x,y,z) <-> S(x,y) & T(y,z))
+&(U(x,t) <-> V(x,t)))
+)
+&
+
+%Let's check for Cl === Cr
+(
+((U(x,t) -> exists y exists z R(x,y,z))
+&(R(x,y,z) -> exists t U(x,t))
+&(S(x,y)<-> exists z R(x,y,z))
+&(T(x,y)<-> exists x R(x,y,z))
+&(V(x,t) <-> U(x,t)))
+<->
+((V(x,t) -> exists y S(x,y))
+&(S(x,y) -> exists t V(x,t))
+&(R(x,y,z) <-> S(x,y) & T(y,z))
+&(U(x,t) <-> V(x,t)))
+))
+
+%The goal is to show that if we have Cs === Ct and Cl == Cr, we can write Cs U Cl === Ct U Cr.
+->
+(
+(((R(x,y,z) & R(x1,y,z1))-> z=z1)
+&(U(x,t) -> exists y exists z R(x,y,z))
+&(R(x,y,z) -> exists t U(x,t))
+&(S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y))
+&(V(x,t) <-> U(x,t)))
+<->
+((S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y))
+&((T(y,z) & T(y,z1)) -> z=z1)
+&(V(x,t) -> exists y S(x,y))
+&(S(x,y) -> exists t V(x,t))
+&(R(x,y,z) <-> S(x,y) & T(y,z))
+&(U(x,t) <-> V(x,t)))
+)
+.
+
+end_of_list.
+

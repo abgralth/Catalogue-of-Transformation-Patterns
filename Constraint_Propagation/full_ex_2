@@ -1,0 +1,88 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Why not just try the full example?
+%Pursuing with HDs
+
+%CONSTRAINT A
+%Primary Key pk[R](x)
+all a all b all c all d all g all h all b1 all c1 all d1 all g1 all h1 
+((R(a,b,c,d,g,h) & R(a,b1,c1,d1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & g=g1 & h=h1)).
+
+%Conditional Functional Dependency c->d (cd != NULL)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1
+((R(a,b,c,d,g,h) & R(a1,b1,c,d1,g1,h1) & (c!= $F & d!= $F))-> d=d1).
+
+%Conditional Functional Dependency c->g (cdgh != NULL)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1
+((R(a,b,c,d,g,h) & R(a1,b1,c,d1,g1,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> g=g1).
+
+%Conditional Functional Dependency g->h (cdgh != NULL)
+all a all b all c all d all g all h all a1 all b1 all c1 all d1 all h1
+((R(a,b,c,d,g,h) & R(a1,b1,c1,d1,g,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> h=h1).
+
+%CONSTRAINT B
+%Primary Key 
+%pk[Rp](a)
+all a all b all b1((Rp(a,b) & Rp1(a,b1)) -> b=b1).
+%pk[Rc1](a)
+all a all b all c all d all b1 all c1 all d1 ((Rc1(a,b,c,d) & Rc1(a,b1,c1,d1)) -> (b=b1 & c=c1 & d=d1)).
+%pk[Rc2](a)
+all a all b all c all d all g all h all b1 all c1 all d1 all g1 all h1 
+((Rc2(a,b,c,d,g,h) & Rc2(a,b1,c1,d1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & g=g1 & h=h1)).
+
+%Functional Dependencies
+%fd[Rc1](c,d)
+all a all b all c all d all a1 all b1 all d1 ((Rc1(a,b,c,d) & Rc1(a1,b1,c,d1)) -> d=d1).
+
+%fd[Rc2](c,d)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> d=d1).
+
+%fd[Rc2](c,g)
+all a all b all c all d all g all h all a1 all b1 all d1 all g1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> g=g1).
+
+%fd[Rc2](g,h)
+all a all b all c all d all g all h all a1 all b1 all c1 all d1 all h1 ((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c1,d1,g,h1)) -> h=h1).
+
+%MAPPINGS A TO B
+all a all b (Rp(a,b) <-> exists c exists d exists g exists h R(a,b,c,d,g,h) & -(c!= $F & d!= $F) & -(c!= $F & d!= $F & g !=$F & h != $F)).
+all a all b all c all d (Rc1(a,b,c,d) <-> exists g exists h R(a,b,c,d,g,h) & (c!= $F & d!= $F) & -(c!= $F & d!= $F & g !=$F & h != $F)).
+all a all b all c all d all g all h (Rc2(a,b,c,d,g,h) <-> R(a,b,c,d,g,h) & (c!= $F & d!= $F) & (c!= $F & d!= $F & g !=$F & h != $F)).
+
+%MAPPINGS B TO A
+all a all b all c all d all g all h (R(a,b,c,d,g,h) <-> Rp(a,b) | Rc1(a,b,c,d) | Rc2(a,b,c,d,g,h)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(a,b,c,d,g,h) & R(a,b1,c1,d1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & g=g1 & h=h1))
+&((R(a,b,c,d,g,h) & R(a1,b1,c,d1,g1,h1) & (c!= $F & d!= $F))-> d=d1)
+&((R(a,b,c,d,g,h) & R(a1,b1,c,d1,g1,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> g=g1)
+&((R(a,b,c,d,g,h) & R(a1,b1,c1,d1,g,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> h=h1)
+&(Rp(a,b) <-> exists c exists d exists g exists h R(a,b,c,d,g,h) & -(c!= $F & d!= $F) & -(c!= $F & d!= $F & g !=$F & h != $F))
+&(Rc1(a,b,c,d) <-> exists g exists h R(a,b,c,d,g,h) & (c!= $F & d!= $F) & -(c!= $F & d!= $F & g !=$F & h != $F))
+&(Rc2(a,b,c,d,g,h) <-> R(a,b,c,d,g,h) & (c!= $F & d!= $F) & (c!= $F & d!= $F & g !=$F & h != $F)))
+<->
+(((Rp(a,b) & Rp1(a,b1)) -> b=b1)
+&((Rc1(a,b,c,d) & Rc1(a,b1,c1,d1)) -> (b=b1 & c=c1 & d=d1))
+&((Rc2(a,b,c,d,g,h) & Rc2(a,b1,c1,d1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & g=g1 & h=h1))
+&((Rc1(a,b,c,d) & Rc1(a1,b1,c,d1)) -> d=d1)
+&((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> d=d1)
+&((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c,d1,g1,h1)) -> g=g1)
+&((Rc2(a,b,c,d,g,h) & Rc2(a1,b1,c1,d1,g,h1)) -> h=h1)
+&(R(a,b,c,d,g,h) <-> Rp(a,b) | Rc1(a,b,c,d) | Rc2(a,b,c,d,g,h))).
+
+end_of_list.
+

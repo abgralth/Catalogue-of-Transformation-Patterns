@@ -1,0 +1,87 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Vertical Decomposition
+%Here, tried with a guard dependency, but the result does not really convince me.
+
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1))-> z=z1).
+
+%Guard Dependency
+exists x exists y exists z (R(x,y,z) -> z = cond).
+
+%CONSTRAINT B
+%Inclusion Dependency 
+all x all y (S(x,y) -> exists z T(y,z)).
+all y all z (T(y,z) -> exists x S(x,y)).
+
+%Functional Dependency
+all y all z all z1 ((T(y,z) & T(y,z1)) -> z=z1).
+
+%Guard Dependency
+exists y exists z (T(y,z) -> z = cond).
+
+%MAPPINGS A TO B
+all x all y (S(x,y)<-> exists z R(x,y,z)).
+all y all z (T(x,y)<-> exists x R(x,y,z)).
+
+%MAPPINGS B TO A
+all x all y all z (R(x,y,z) <-> S(x,y) & T(y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+%Let's check for Cs === Ct
+((
+(((R(x,y,z) & R(x1,y,z1))-> z=z1)
+&(S(x,y)<-> exists z R(x,y,z))
+&(T(x,y)<-> exists x R(x,y,z)))
+<->
+((S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y))
+&((T(y,z) & T(y,z1)) -> z=z1)
+&(R(x,y,z) <-> S(x,y) & T(y,z)))
+)
+&
+
+%Let's check for Cl === Cr
+(
+((exists x exists y exists z (R(x,y,z) -> z = cond))
+&(S(x,y)<-> exists z R(x,y,z))
+&(T(x,y)<-> exists x R(x,y,z)))
+<->
+((exists y exists z (T(y,z) -> z = cond))
+&(R(x,y,z) <-> S(x,y) & T(y,z)))
+))
+
+%The goal is to show that if we have Cs === Ct and Cl == Cr, we can write Cs U Cl === Ct U Cr.
+->
+(
+(((R(x,y,z) & R(x1,y,z1))-> z=z1)
+&(exists x exists y exists z (R(x,y,z) -> z = cond))
+&(S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y)))
+<->
+((S(x,y) -> exists z T(y,z))
+&(T(y,z) -> exists x S(x,y))
+&((T(y,z) & T(y,z1)) -> z=z1)
+&(exists y exists z (T(y,z) -> z = cond))
+&(R(x,y,z) <-> S(x,y) & T(y,z)))
+)
+.
+
+end_of_list.
+

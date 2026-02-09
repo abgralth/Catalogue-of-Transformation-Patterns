@@ -1,0 +1,39 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a disjoint[R1,R2] after a join
+
+%We have S1,S2 disjoint and want to see if they remain disjoint after getting join with two independent tables R1p and R2p
+
+%CONSTRAINT A
+%Disjoint
+all x all y (-R1(x,y) | -R2(x,y)).
+
+%Inclusion Dependency ind=[R1,R2](Y,Y)
+%all x all y (R2(x,y) -> exists z R1(y,z)).
+%all y all z (R1(y,z) -> exists x R2(x,y)).
+
+%MAPPINGS A TO B
+all x all y all z (S1(x,y,z) <-> R1(x,y) & R1p(x,z)).
+all x all y all t (S2(x,y,t) <-> R2(x,y) & R2p(x,t)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all t (-S1(x,y,z) | -S2(x,y,t)).
+
+end_of_list.
+

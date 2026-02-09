@@ -1,0 +1,47 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a functional dependency Y -> Z after a left outer join
+
+%We have Y->Z in R1, and we want to show that after left-outer-joining it with another relation R2, R1 R2 not in a total IND, we still kept all
+%values present in R1.
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R1(x,y,z) & R1(x1,y,z1))-> z=z1).
+
+%Inclusion Dependency ind=[R1,R2](Y,Y)
+%all x all y (R2(x,y) -> exists z R1(y,z)).
+%all y all z (R1(y,z) -> exists x R2(x,y)).
+
+%MAPPINGS A TO B
+%Freaky translation of the left outer join, the idea is to start from a basic join onto which we add via union each tuples in R1 not joined
+%with R2
+all x all y all z all t (R(x,y,z,t) <-> (R1(x,y,z) & R2(x,t)) | (R1(x,y,z) & -(R1(x,y,z) & R2(x,t)))).
+
+end_of_list.
+
+formulas(goals).
+
+(
+%Simple propagation check
+(all x all y all z all t all x1 all z1 all t1 ((R(x,y,z,t) & R(x1,y,z1,t1)) -> z=z1))
+&
+%Check for reversability. If this hold then all values of R1 are also present in R
+(R1(x,y,z) <-> exists t R(x,y,z,t))
+
+).
+
+end_of_list.
+

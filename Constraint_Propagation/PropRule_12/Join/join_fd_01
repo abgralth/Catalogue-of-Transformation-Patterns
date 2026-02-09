@@ -1,0 +1,40 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a functional dependency Y -> Z after a join
+
+%We have Y -> Z in R1, we join R1 with R2 and verify that this FD gets correctly propagated to R.
+%We don't even need the inclusion dependency to prove that Y->Z also hold in R, albeit on an uncertain range of instances inferior or equal
+%to those present in R1.
+
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all y all z all z1 ((R1(y,z) & R1(y,z1))-> z=z1).
+
+%Inclusion Dependency ind=[R1,R2](Y,Y)
+%all x all y (R2(x,y) -> exists z R1(y,z)).
+%all y all z (R1(y,z) -> exists x R2(x,y)).
+
+%MAPPINGS A TO B
+all x all y all z (R(x,y,z) <-> R1(y,z) & R2(x,y)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1)) -> z=z1).
+
+end_of_list.
+

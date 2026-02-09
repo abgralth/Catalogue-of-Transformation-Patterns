@@ -1,0 +1,38 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%For the third propagation rule, we show how an inclusion dependency get split intwo following a selection.
+
+%This time, we split only S into S1,S2 and see the transformation of ind=[R,S] intwo indC=[S1,R], indC=[S2,R].
+
+%CONSTRAINT A
+%Inclusion Dependency
+all x all y (R(x,y) -> exists z S(x,z)).
+all x all z (S(x,z) -> exists y R(x,y)).
+
+%MAPPINGS A TO B
+all x all y (S1(x,y) <-> S(x,y) & x = cond).
+all x all z (S2(x,z) <-> S(x,z) & -(x = cond)).
+
+end_of_list.
+
+formulas(goals).
+
+((S1(x,z) -> exists y (R(x,y)))
+&(S2(x,z) -> exists y (R(x,y)))
+&(S1(x,z) -> x = cond)
+&(S2(x,z) -> -(x = cond))).
+
+end_of_list.
+

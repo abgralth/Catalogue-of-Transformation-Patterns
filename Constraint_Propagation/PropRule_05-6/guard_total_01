@@ -1,0 +1,58 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Playing a bit around the propagation rules related to guard dependencies, I propose the following documents
+%The Sixth propagation is also unlikely to translate in a meaningful manner.
+
+%In any case, we have X = NULL, Y = NULL in R:(X,Y), and the idea is to show something
+
+%CONSTRAINT A
+%Guards
+exists x exists y (R(x,y) -> x = $F).
+exists x exists y (R(x,y) -> y = $F ).
+
+%CONSTRAINT B
+%Trying stuff outs
+%Basically, trying to write that, if in a relation R(x), we set a set of attributes X to null, 
+%then, that sucks and we shouldn't do that?
+all x (S1(x) & x = $F -> $F).
+
+%MAPPINGS A TO B
+all x all y (S1(x) <-> exists y (R(x,y) & y = $F)).
+all x all y (S2(x,y) <-> R(x,y) & -(y = $F)).
+
+end_of_list.
+
+formulas(goals).
+
+%Quick checks for S2
+((all x all y (S2(x,y) -> y != $F))
+&(exists x exists y (S2(x,y) -> x = $F ))
+%Now, for S1, we can of course check for X = $F
+&(exists x exists y (S1(x) -> x = $F))
+%The intuition that I struggle to check is that:
+% - exists x S1(x) -> x = $F
+% - all x S1(x) -> x != $F
+%Are somehow equivalent
+%Writting it as follows of course doesn't work; $F do not correspond to a null value in a close world system
+&
+((exists x (S1(x) -> x = $F))
+<->
+(all x (S1(x) -> -(x = $F))))
+%However, somehow with the additional constraint we added we ensured that all x in S1(x) must we the negation of such constraint
+&(all x (S1(x) -> -(x = $F)))
+).
+
+end_of_list.
+

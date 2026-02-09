@@ -1,0 +1,33 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a primaty key X
+%In this case, Z is projected away and we check that the PK still hold in S
+
+%CONSTRAINT A
+%Primary Key 
+all x all y all z all y1 all z1 ((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1)).
+
+%MAPPINGS A TO B
+all x all y (S(x,y)<-> (exists z (R(x,y,z)))).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all y1 ((S(x,y) & S(x,y1)) -> y=y1).
+
+end_of_list.
+

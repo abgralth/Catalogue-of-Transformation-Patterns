@@ -1,0 +1,71 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Here, we want to see under which circumstances can two mvds merge.
+%Playing around with a composit LHS, we see that the same preset working for FDs also work for MVDs the same way.
+
+%CONSTRAINT A
+%Multivalue Dependency YZ->>T
+all x all y all z all t all x1 all t1 ((S1(x,y,z,t) & S1(x1,y,z,t1)) -> S1(x1,y,z,t)).
+all x all y all z all t all x1 all t1 ((S2(x,y,z,t) & S2(x1,y,z,t1)) -> S2(x1,y,z,t)).
+
+%Guards
+%PRESET 1 (Y =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> y = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(y = cond)).
+
+%PRESET 2 (Z =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> z = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(z = cond)).
+
+%PRESET 3 (Y & Z =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> (y= cond & z = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(y= cond & z = cond)).
+
+%PRESET 4 (X & T =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & t = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & t = cond)).
+
+%PRESET 5 (X & Y =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond)).
+
+%PRESET 6 (X & Y & Z =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond & z = cond)).
+
+%PRESET 7 (X & Y & Z & T =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond & t = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond & z = cond & t = cond)).
+
+%PRESET 7bis (X & Y & Z & T =/!= cond) TRUE
+all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond & t = cond)).
+all x all y all z all t (S2(x,y,z,t) -> (x != cond & y != cond & z != cond & t != cond)).
+
+%PRESET 8 Disjoint[S1,S2]
+%all x all y all z all t (-S1(x,y,z,t) | -S2(x,y,z,t)).
+
+%MAPPINGS A TO B
+all x all y all z all t (R(x,y,z,t) <-> S1(x,y,z,t) | S2(x,y,z,t)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all t all x1 all t1 ((R(x,y,z,t) & R(x1,y,z,t1)) -> R(x1,y,z,t)).
+
+end_of_list.
+

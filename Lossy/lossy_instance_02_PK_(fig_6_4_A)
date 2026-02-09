@@ -1,0 +1,49 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossy TP for instance loss.
+%We want to show that a primary key still hold despite the loss of one attribute z
+%We set the complement Mc as Rc:(x,z) here
+
+%CONSTRAINT A
+%Primay Key on X
+all x all y all z all y1 all z1 ((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1)).
+
+%MAPPINGS A TO B
+all x all y (Rp(x,y) -> exists z R(x,y,z)).
+
+%(((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1))
+%&(Rp(x,y) -> exists z R(x,y,z)))
+%->
+%(((Rp(x,y) & Rp(x,y1)) -> y=y1)).
+
+end_of_list.
+
+formulas(goals).
+
+((((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1))
+&(Rp(x,y) -> exists z R(x,y,z)))
+->
+((Rp(x,y) & Rp(x,y1)) -> y=y1))
+&
+((((Rp(x,y) & Rp(x,y1)) -> y=y1)
+&(R(x,y,z) -> Rp(x,y) & Rc(x,z)))
+->
+((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1))).
+
+%CONSTRAINT B
+%all x all y all y1 ((Rp(x,y) & Rp(x,y1)) -> y=y1).
+
+end_of_list.
+

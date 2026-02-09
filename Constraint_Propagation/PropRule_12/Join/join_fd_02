@@ -1,0 +1,48 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a functional dependency Y -> Z after a join
+
+%In the previous check, we more or less assumed that for each YZ pair in R1, each Y matchs in R2 would also have the same Z
+%But what if we have {x1,y1,z1} in R1 but {t1, y1, z2} in R2?
+%For simplicity sake, we match on X
+
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R1(x,y,z) & R1(x1,y,z1))-> z=z1).
+all x all y all z all x1 all z1 ((R2(x,y,z) & R2(x1,y,z1))-> z=z1).
+
+%Force Disjointness on Z
+%all z all x1 all x2 all y1 all y2 (-R1(x1,y1,z) | -R2(x2,y2,z)).
+
+%
+all x1 all x2 all y1 all y2 all z1 all z2 (R1(x1,y1,z1) & R2(x2,y2,z2) -> z1 = z2).
+
+%Inclusion Dependency ind=[R1,R2](Y,Y)
+%all x all y (R2(x,y) -> exists z R1(y,z)).
+%all y all z (R1(y,z) -> exists x R2(x,y)).
+
+%MAPPINGS A TO B
+%all x all y all z (R(x,y,z) <-> R1(y,z) & R2(x,y)).
+all x all y all z exists z1 exists z2 (R(x,y,z) <-> R1(x,y,z1) & R2(x,y,z2)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1)) -> z=z1).
+
+end_of_list.
+

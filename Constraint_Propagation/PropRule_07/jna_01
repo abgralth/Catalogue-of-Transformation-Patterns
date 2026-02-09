@@ -1,0 +1,58 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Playing a bit around the propagation rules related to guard dependencies, I propose the following documents
+%The seventh propagation rule address the difference in propagation non-null guards have related to null guards.
+
+%This notably concerns the automatic drop of otherwise unbounded attributes. Basically, In a relation R:(x,y,z)
+%onto which is held YZ != NULL and Y != NULL, if -(Y!=NULL) is held over S2, then Z, being ubounded should also drop as its non-null
+%status is entierely dependenct on Y non-null.
+
+%In fine, what we prove, I think, is that losing YZ in S2 does lead to the loss of information as a reverse mapping still prove entailment
+
+%CONSTRAINT A
+%Guards
+exists x exists y exists z (R(x,y,z) -> y != $F).
+exists x exists y exists z (R(x,y,z) -> (y != $F & z != F)).
+
+%MAPPINGS A TO B
+all x all y (S1(x,y,z) <-> R(x,y,z) & y != $F).
+all x all y (S2(x) <-> exists y exists z R(x,y,z) & -(y != $F)).
+
+end_of_list.
+
+formulas(goals).
+
+%Once again, we can start with some quick checks on S1
+(
+(all x all y all z (S1(x,y,z) -> y != $F))
+&(exists x exists y exists z (S1(x,y,z) -> (y != $F & z != F)))
+&(exists x exists y exists z (S1(x,y,z) -> -(y != $F & z != F)))
+
+%As for S2
+&(all x (S2(x) -> -(y != $F)))
+&(all x (S2(x) -> -(y != $F & z != $F)))
+
+%Let's see if a reverse mapping works
+&(all x all y all z (R(x,y,z) <-> S1(x,y,z) | S2(x)))
+)
+%Let's now see if it's reversible
+->
+((exists x exists y exists z (R(x,y,z) -> y != $F))
+&(exists x exists y exists z (R(x,y,z) -> (y != $F & z != F)))
+&(S1(x,y,z) <-> R(x,y,z) & y != $F)
+&(S2(x) <-> exists y exists z R(x,y,z) & -(y != $F))).
+
+end_of_list.
+

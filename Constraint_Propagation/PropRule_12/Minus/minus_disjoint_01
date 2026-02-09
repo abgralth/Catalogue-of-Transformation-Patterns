@@ -1,0 +1,39 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a disjoint[R1,R2] after a set difference
+
+%This time we apply the set difference of R1,R2 by R3 and see that the disjointness is kept. Pretty straghtforward.
+%It also works if we used two different tables R3,R4 instead of only R3
+
+%CONSTRAINT A
+%Guard
+all x all y all z (-R1(x,y,z) | -R2(x,y,z)).
+
+%MAPPINGS A TO B
+%all x all y all z (S1(x,y,z) <-> R1(x,y,z) & -R3(x,y,z)).
+%all x all y all z (S2(x,y,z) <-> R2(x,y,z) & -R3(x,y,z)).
+
+all x all y all z (S1(x,y,z) <-> R1(x,y,z) & -R3(x,y,z)).
+all x all y all z (S2(x,y,z) <-> R2(x,y,z) & -R4(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z (-S1(x,y,z) | -S2(x,y,z)).
+
+end_of_list.
+

@@ -1,0 +1,36 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present the second rule of propagation for inclusion dependencies
+%It consists in updating the constraint after a projection to now target a newly created table.
+
+%In the goals area we can write S1 or R1 interchangeably and still see the propagation of the IND after a projection.
+%This time, it's a subseteq IND.
+
+%CONSTRAINT A
+
+%Inclusion Dependency
+all x all y (R1(x,y) -> exists z R2(x,z)).
+%MAPPINGS A TO B
+all x all y (S1(x,y) <-> R1(x,y)).
+all x (S2(x) <-> exists z R2(x,z)).
+
+end_of_list.
+
+formulas(goals).
+
+S1(x,y) -> S2(x).
+
+end_of_list.
+

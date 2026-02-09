@@ -1,0 +1,35 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%This folder contains several example of constraint decay. That is, propagated constraint which cannot be reversed due to a lack of 
+%proper reverse mapping.
+
+%We start with the decay of a multivalue dependency Y ->> ZT into Y ->> Z
+%In theory it's a rather simple application of the FD decomposition rule stating that X -> Y, X -> Z is equivalent to X -> YZ.
+
+%CONSTRAINT A
+%Multivalue Dependency Y->>ZT
+all x all y all z all t((exists x1 R(x1,y,z,t) & exists z1 exists t1 R(x,y,z1,t1)) -> R(x,y,z,t)).
+
+%MAPPINGS A TO B
+all x all y all z (S(x,y,z) <-> exists t (R(x,y,z,t))).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z((exists x1 S(x1,y,z) & exists z1 S(x,y,z1)) -> S(x,y,z)).
+
+end_of_list.
+

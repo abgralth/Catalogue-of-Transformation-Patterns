@@ -1,0 +1,67 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Merging S1, S2, both with a subset inclusion dependency over S
+%The goal is to transform two ind^C= into a single ind^=
+
+%This time, the opposite guards are not enough, and so we need to also check for covering
+%And yet, once more, the guard matter little here thanks to the covering constraint.
+
+%CONSTRAINT A
+%Inclusion Dependency ind^C=
+all x all y all z (S1(x,y,z) -> exists t S3(z,t)).
+all x all y all z (S2(x,y,z) -> exists t S4(z,t)).
+
+%Guards
+%PRESET 1 (X =/!= cond) TRUE
+%all x all y all z (S1(x,y,z) -> x = cond).
+%all x all y all z (S2(x,y,z) -> -(x = cond)).
+
+%PRESET 2 (Y =/!= cond) TRUE
+all x all y all z (S1(x,y,z) -> y = cond).
+all x all y all z (S2(x,y,z) -> -(y = cond)).
+
+%PRESET 3 (Z =/!= cond) TRUE
+%all x all y all z (S1(x,y,z) -> z = cond).
+%all x all y all z (S2(x,y,z) -> -(z = cond)).
+
+%MAPPINGS A TO B
+all x all y all z (R(x,y,z) <-> S1(x,y,z) | S2(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+%Main Goal
+((all x all y all z (R(x,y,z) & (y = cond) -> exists t S3(z,t)))
+&(all x all y all z (R(x,y,z) & -(y = cond) -> exists t S4(z,t))))
+&
+%Quick Losslessness Check
+((R(x,y,z) & (y = cond) -> exists t S3(z,t))
+&(R(x,y,z) & -(y = cond) -> exists t S4(z,t))
+%Reverse Mapping
+&(S1(x,y,z) <-> R(x,y,z) & (y = cond))
+&(S2(x,y,z) <-> R(x,y,z) & -(y = cond)))
+<->
+((S1(x,y,z) -> exists t S3(z,t))
+&(S2(x,y,z) -> exists t S4(z,t))
+&(S1(x,y,z) -> y = cond)
+&(S2(x,y,z) -> -(y = cond))
+&(R(x,y,z) <-> S1(x,y,z) | S2(x,y,z)))
+.
+
+end_of_list.
+

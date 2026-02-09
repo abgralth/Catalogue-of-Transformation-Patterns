@@ -1,0 +1,70 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Four FDs.
+%Given what PRESET 1 returns, it seems like we need to handle each FD independently. Using a single guard for both like we attempted with
+% all x all y all z all t all u (S1(x,y,z,t,u) -> (y = cond | t=cond))
+%do not appear to work.
+
+%CONSTRAINT A
+%Functional Dependency Y->Z, T->U
+all x all y all z all t all u all x1 all z1 all t1 all u1 ((S1(x,y,z,t,u) & S1(x1,y,z1,t1,u1))-> z=z1).
+all x all y all z all t all u all x1 all y1 all z1 all u1 ((S1(x,y,z,t,u) & S1(x1,y1,z1,t,u1))-> u=u1).
+all x all y all z all t all u all x1 all z1 all t1 all u1 ((S2(x,y,z,t,u) & S2(x1,y,z1,t1,u1))-> z=z1).
+all x all y all z all t all u all x1 all y1 all z1 all u1 ((S2(x,y,z,t,u) & S2(x1,y1,z1,t,u1))-> u=u1).
+
+%Guards
+
+%PRESET 1 Independent Y,T conditions 
+%all x all y all z all t all u (S1(x,y,z,t,u) -> (y = cond | t=cond)).
+%all x all y all z all t all u (S2(x,y,z,t,u) -> -(y = cond | t=cond)).
+all x all y all z all t all u (S1(x,y,z,t,u) -> (y = cond)).
+all x all y all z all t all u (S2(x,y,z,t,u) -> -(y = cond)).
+all x all y all z all t all u (S1(x,y,z,t,u) -> (t=cond)).
+all x all y all z all t all u (S2(x,y,z,t,u) -> -(t=cond)).
+
+%MAPPINGS A TO B
+all x all y all z all t all u (R(x,y,z,t,u) <-> S1(x,y,z,t,u) | S2(x,y,z,t,u)).
+
+end_of_list.
+
+formulas(goals).
+
+%Basic Result
+(((R(x,y,z,t,u) & R(x1,y,z1,t1,u1))-> z=z1)
+&(R(x,y,z,t,u) & R(x1,y1,z1,t,u1))-> u=u1)
+%Quick Losslessness Check
+&
+(((R(x,y,z,t,u) & R(x1,y,z1,t1,u1))-> z=z1)
+&((R(x,y,z,t,u) & R(x1,y1,z1,t,u1))-> u=u1)
+%This is the most interesting part, what reverse mapping would actually work here?
+&(S1(x,y,z,t,u) <-> R(x,y,z,t,u) & (t = cond))
+&(S2(x,y,z,t,u) <-> R(x,y,z,t,u) & -(t = cond)))
+<->
+(((S1(x,y,z,t,u) & S1(x1,y,z1,t1,u1))-> z=z1)
+&((S1(x,y,z,t,u) & S1(x1,y1,z1,t,u1))-> u=u1)
+&((S2(x,y,z,t,u) & S2(x1,y,z1,t1,u1))-> z=z1)
+&((S2(x,y,z,t,u) & S2(x1,y1,z1,t,u1))-> u=u1)
+&(S1(x,y,z,t,u) -> (y = cond))
+&(S2(x,y,z,t,u) -> -(y = cond))
+&(S1(x,y,z,t,u) -> (t=cond))
+&(S2(x,y,z,t,u) -> -(t=cond))
+&(R(x,y,z,t,u) <-> S1(x,y,z,t,u) | S2(x,y,z,t,u)))
+
+.
+
+end_of_list.
+

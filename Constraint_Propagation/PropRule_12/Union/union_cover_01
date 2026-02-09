@@ -1,0 +1,38 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Similarly to the disjoint file, it's tough to present a really interesting case for covers.
+%What I did here is just to show the absorption of S3 by both R1. It works this way and if both R1,R2 absorb it as well.
+
+%CONSTRAINT A
+%Distinct
+all x all y (S(x,y) <-> exists z exists t exists u (S1(x,z) | S2(x,t) | S3(x,u))).
+
+%MAPPINGS A TO B
+all x all z (R1(x,z) <-> S1(x,z) | S2(x,z)).
+all x all z (R2(x,z) <-> S1(x,z) | S3(x,z)).
+all x all z (R3(x,z) <-> S2(x,z) | S3(x,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((S(x,y) <-> exists z exists u (R1(x,z) | S3(x,u)))
+&(S(x,y) <-> exists z exists u (R2(x,z) | S2(x,u)))
+&(S(x,y) <-> exists z exists u (R3(x,z) | S1(x,u)))).
+
+end_of_list.
+

@@ -1,0 +1,52 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 600).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Playing a bit around the propagation rules related to guard dependencies, I propose the following documents
+%Coming to the 8th propagation rule, we now tackle a redundancy difficult to avoid in our sequential methodology
+
+%So, in a table R:(x,y,z,t) we have three constraint YZ = NULL, YT = NULL and ZT = NULL and we want to show... stuff
+%Basically, if YZ and YT are both set to null, this should also set ZT to null
+
+%CONSTRAINT A
+%Guards
+exists x exists y exists z exists t (R(x,y,z,t) -> (y = $F & z = $F)).
+exists x exists y exists z exists t (R(x,y,z,t) -> (y = $F & t = $F)).
+exists x exists y exists z exists t (R(x,y,z,t) -> (z = $F & t = $F)).
+
+%MAPPINGS A TO B
+all x all y all z all t (S1(x,y,z,t) <-> R(x,y,z,t) & ((y = $F & z = $F) & (y = $F & t = $F))).
+%all x all y all z all t (S2(x,y,z,t) <-> R(x,y,z,t) & (-(y = $F & z = $F) & (y = $F & t = $F))).
+%all x all y all z all t (S3(x,y,z,t) <-> R(x,y,z,t) & ((y = $F & z = $F) & -(y = $F & t = $F))).
+all x all y all z all t (S4(x,y,z,t) <-> R(x,y,z,t) & (-(y = $F & z = $F) & -(y = $F & t = $F))).
+
+end_of_list.
+
+formulas(goals).
+
+%We skip some intermediary steps
+(
+%Some easy checks
+(all x all y all z all t (S1(x,y,z,t) -> y = $F))
+%We see that, indeed, all tuples in S1 have to satisfy ZT = NULL
+&(all x all y all z all t (S1(x,y,z,t) -> (z = $F & t = $F)))
+%The same cannot be said for the table S4 where neither YZ = NULL nor YT = NULL are true as it is still possible for
+%ZT = NULL to hold regardless without contradictions
+%&(all x all y all z all t (S4(x,y,z,t) -> -(z = $F & t = $F)))
+
+%
+
+).
+
+end_of_list.
+

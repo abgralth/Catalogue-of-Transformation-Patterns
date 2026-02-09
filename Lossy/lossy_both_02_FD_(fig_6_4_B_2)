@@ -1,0 +1,41 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossy TP for both loss.
+%We have one FD and one PK and propose a both loss mapping which lose the FD an a independent attribute t
+%Here, we have use for complement Rc:(x,t)
+
+%CONSTRAINT A
+%Primary Key X
+all x all y all z all t all y1 all z1 all t1 ((R(x,y,z,t) & R(x,y1,z1,t1)) ->  (y=y1 & z=z1 & t=t1)).
+%Functional Dependency y -> z
+all x all y all z all t all x1 all z1 all t1 ((R(x,y,z,t) & R(x1,y,z1,t1)) ->  z=z1).
+
+%MAPPINGS A TO B
+all x all y all z (Rp(x,y,z) -> exists t exists u R(x,y,z,t)).
+
+%(Rp(x,y,z,t) & Rp(x1,y,z1,t1)) ->  z=z1
+
+end_of_list.
+
+formulas(goals).
+
+(((R(x,y,z,t) & R(x,y1,z1,t1)) ->  (y=y1 & z=z1 & t=t1))
+&((R(x,y,z,t) & R(x1,y,z1,t1)) ->  z=z1)
+&(Rp(x,y,z) -> exists t exists u R(x,y,z,t)))
+->
+((Rp(x,y,z) & Rp(x1,y,z1)) ->  z=z1).
+
+end_of_list.
+

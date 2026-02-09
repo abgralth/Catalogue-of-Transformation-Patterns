@@ -1,0 +1,45 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a functional dependency Y -> Z after a projection
+%In this case, Y and Z are projected together
+
+%CONSTRAINT A
+%Functional Dependency Y->Z
+all x all y all z all x1 all z1 ((R(x,y,z) & R(x1,y,z1))-> z=z1).
+
+%MAPPINGS A TO B
+all y all z (S1(y,z)<-> exists x (R(x,y,z))).
+all x all y (S2(x,y) <-> exists z (R(x,y,z))).
+
+end_of_list.
+
+formulas(goals).
+
+%Propagation of Y -> Z
+%((all y all z all z1 ((S1(y,z) & S1(y,z1))-> z=z1))
+%For the reverse mapping we need the full inclusion dependency
+%&(all y all z ())
+%&()
+
+%&(all x all y all z R(x,y,z) <-> S1(y,z) & S2(x,y))).
+
+(all x all y (S2(x,y) -> exists z S1(y,z)))
+&(all y all z (S1(y,z) -> exists x S2(x,y)))
+&(all y all z all z1 ((S1(y,z) & S1(y,z1))-> z=z1))
+.
+
+end_of_list.
+

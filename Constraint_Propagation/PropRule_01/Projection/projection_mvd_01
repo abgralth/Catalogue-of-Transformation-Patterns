@@ -1,0 +1,33 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a multivalue dependency Y ->> Z after a projection
+%In this case, Y and Z are projected together along with another attribute t to show that an mvd still holds on this triple
+
+%CONSTRAINT A
+%Multivalued Dependency Y->>Z
+all x all y all z all t((exists x1 exists t1 R(x1,y,z,t1) & exists z1 R(x,y,z1,t)) -> R(x,y,z,t)).
+
+%MAPPINGS A TO B
+all y all z all t (S(y,z,t)<-> (exists x (R(x,y,z,t)))).
+
+end_of_list.
+
+formulas(goals).
+
+all y all z all t (exists t1 S(y,z,t1) & exists z1 S(y,z1,t) -> S(y,z,t)).
+
+end_of_list.
+

@@ -1,0 +1,166 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, -1).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 600).
+end_if.
+
+formulas(assumptions).
+
+%Why not just try the full example?
+%Full example, big memory limit, as expected
+
+%CONSTRAINT A
+%Primary Key pk[R](x)
+all a all b all c all d all e all f all g all h all b1 all c1 all d1 all e1 all f1 all g1 all h1 
+((R(a,b,c,d,e,f,g,h) & R(a,b1,c1,d1,e1,f1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & e=e1 & f=f1 & g=g1 & h=h1)).
+
+%Multivalued Dependency mvd[R](x,e)
+all a all b all c all d all e all f all g all h all b1 all c1 all d1 all e1 all f1 all g1 all h1  
+((exists b1 exists c1 exists d1 exists f1 exists g1 exists h1 R(a,b1,c1,d1,e,f1,g1,h1) & exists e1 R(a,b,c,d,e1,f,g,h)) -> R(a,b,c,d,e1,f,g,h)).
+
+%Multivalued Dependency mvd[R](x,f)
+all a all b all c all d all e all f all g all h all b1 all c1 all d1 all e1 all f1 all g1 all h1  
+((exists b1 exists c1 exists d1 exists e1 exists g1 exists h1 R(a,b1,c1,d1,e1,f,g1,h1) & exists f1 R(a,b,c,d,e,f1,g,h)) -> R(a,b,c,d,e1,f,g,h)).
+
+%Conditional Functional Dependency c->d (cd != NULL)
+all a all b all c all d all e all f all g all h all a1 all b1 all d1 all e1 all f1 all g1 all h1
+((R(a,b,c,d,e,f,g,h) & R(a1,b1,c,d1,e1,f1,g1,h1) & (c!= $F & d!= $F))-> d=d1).
+
+%Conditional Functional Dependency c->g (cdgh != NULL)
+all a all b all c all d all e all f all g all h all a1 all b1 all d1 all e1 all f1 all g1 all h1
+((R(a,b,c,d,e,f,g,h) & R(a1,b1,c,d1,e1,f1,g1,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> g=g1).
+
+%Conditional Functional Dependency g->h (cdgh != NULL)
+all a all b all c all d all e all f all g all h all a1 all b1 all c1 all d1 all e1 all f1 all h1
+((R(a,b,c,d,e,f,g,h) & R(a1,b1,c1,d1,e1,f1,g,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> h=h1).
+
+%Inclusion Depependency ind^C=[R,R](h,b)
+all a all b all c all d all e all f all g all h (R(a,b,c,d,e,f,g,h) -> R(a,h,c,d,e,f,g,h)).
+
+%CONSTRAINT B
+%Primary Key pk[Rp](a)
+all a all b all b1((Rp(a,b) & Rp(a,b1)) -> b=b1).
+
+%Primaty Key pk[Re](a)
+all a all e all a1 all e1 (Re(a,e) & Re(a1,e1) -> (a=a1 & e=e1)).
+
+%Primaty Key pk[Rf](a)
+all a all f all a1 all f1 (Rf(a,f) & Rf(a1,f1) -> (a=a1 & f=f1)).
+
+%Primaty Key pk[Rc1](c)
+all a all c all a1 (Rc1(a,c) & Rc1(a1,c) -> a=a1).
+
+%Primaty Key pk[Rd](c)
+all c all d all d1 (Rd(c,d) & Rd(c,d) -> d=d1).
+
+%Primaty Key pk[Rc2](c)
+all a all c all a1 (Rc2(a,c) & Rc2(a1,c) -> a=a1).
+
+%Primaty Key pk[Rg](c)
+all c all g all g1 (Rg(c,g) & Rg(c,g) -> g=g1).
+
+%Primaty Key pk[Rh](g)
+all g all h all h1 (Rh(g,h) & Rh(g,h) -> h=h1).
+
+%Inclusion Dependency, ^=
+%Rp = Re
+all a all b (Rp(a,b) -> exists e Re(a,e)).
+all a all e (Re(a,e) -> exists b Rp(a,b)).
+
+%Rp = Rf
+all a all b (Rp(a,b) -> exists f Rf(a,f)).
+all a all f (Rf(a,f) -> exists b Rp(a,b)).
+
+%Rc1 = Rd
+all a all c (Rc1(a,c) -> exists d Rd(c,d)).
+all c all d (Rd(c,d) -> exists a Rc1(a,c)).
+
+%Rc2 = Rg
+all a all c (Rc2(a,c) -> exists g Rg(c,g)).
+all c all g (Rg(c,g) -> exists a Rc2(a,c)).
+
+%Rg = Rh
+all c all g (Rg(c,g) -> exists h Rh(g,h)).
+all g all h (Rh(g,h) -> exists c Rg(c,g)).
+
+%Inclusion Dependency ^C=
+
+%Rc1 C= Rp
+all a all c (Rc1(a,c) -> exists b Rp(a,b)).
+
+%Rc2 C= Rc1
+all a all c (Rc2(a,c) ->  Rc1(a,c)).
+
+%MAPPINGS A TO B
+all a all b (Rp(a,b) <-> exists c exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h)).
+all a all e (Re(a,e) <-> exists b exists c exists d exists f exists g exists h R(a,b,c,d,e,f,g,h)).
+all a all f (Rf(a,f) <-> exists b exists c exists d exists e exists g exists h R(a,b,c,d,e,f,g,h)).
+all a all c (Rc1(a,c) <-> exists b exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F)).
+all c all d (Rd(c,d) <-> exists a exists b exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F)).
+all a all c (Rc2(a,c) <-> exists b exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F)).
+all c all g (Rg(c,g) <-> exists a exists b exists d exists e exists f exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F)).
+all g all h (Rh(g,h) <-> exists a exists b exists c exists d exists e exists f R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F)).
+
+%MAPPINGS B TO A
+all a all b all c all d all e all f all g all h (R(a,b,c,d,e,f,g,h) <-> 
+Rp(a,b) & Re(a,e) & Rf(a,f) & Rc1(a,c) & Rd(c,d) & Rc2(a,c) & Rg(c,g) & Rh(g,h)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(a,b,c,d,e,f,g,h) & R(a,b1,c1,d1,e1,f1,g1,h1)) -> (b=b1 & c=c1 & d=d1 & e=e1 & f=f1 & g=g1 & h=h1))
+&((exists b1 exists c1 exists d1 exists f1 exists g1 exists h1 R(a,b1,c1,d1,e,f1,g1,h1) & exists e1 R(a,b,c,d,e1,f,g,h)) -> R(a,b,c,d,e1,f,g,h))
+&((exists b1 exists c1 exists d1 exists e1 exists g1 exists h1 R(a,b1,c1,d1,e1,f,g1,h1) & exists f1 R(a,b,c,d,e,f1,g,h)) -> R(a,b,c,d,e1,f,g,h))
+&((R(a,b,c,d,e,f,g,h) & R(a1,b1,c,d1,e1,f1,g1,h1) & (c!= $F & d!= $F))-> d=d1)
+&((R(a,b,c,d,e,f,g,h) & R(a1,b1,c,d1,e1,f1,g1,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> g=g1)
+&((R(a,b,c,d,e,f,g,h) & R(a1,b1,c1,d1,e1,f1,g,h1) & (c!= $F & d!= $F & g !=$F & h != $F))-> h=h1)
+&(R(a,b,c,d,e,f,g,h) -> R(a,h,c,d,e,f,g,h))
+
+&(Rp(a,b) <-> exists c exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h))
+&(Re(a,e) <-> exists b exists c exists d exists f exists g exists h R(a,b,c,d,e,f,g,h))
+&(Rf(a,f) <-> exists b exists c exists d exists e exists g exists h R(a,b,c,d,e,f,g,h))
+&(Rc1(a,c) <-> exists b exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F))
+&(Rd(c,d) <-> exists a exists b exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F))
+&(Rc2(a,c) <-> exists b exists d exists e exists f exists g exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F))
+&(Rg(c,g) <-> exists a exists b exists d exists e exists f exists h R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F))
+&(Rh(g,h) <-> exists a exists b exists c exists d exists e exists f R(a,b,c,d,e,f,g,h) & (c!= $F & d!= $F & g !=$F & h != $F))
+)
+->
+(
+%Primary Keys
+((Rp(a,b) & Rp(a,b1)) -> b=b1)
+&(Re(a,e) & Re(a1,e1) -> (a=a1 & e=e1))
+&(Rf(a,f) & Rf(a1,f1) -> (a=a1 & f=f1))
+&(Rc1(a,c) & Rc1(a1,c) -> a=a1)
+&(Rd(c,d) & Rd(c,d) -> d=d1)
+&(Rc2(a,c) & Rc2(a1,c) -> a=a1)
+&(Rg(c,g) & Rg(c,g) -> g=g1)
+&(Rh(g,h) & Rh(g,h) -> h=h1)
+
+%Inclusion Dependency
+&(Rp(a,b) -> exists e Re(a,e))
+&(Re(a,e) -> exists b Rp(a,b))
+&(Rp(a,b) -> exists f Rf(a,f))
+&(Rf(a,f) -> exists b Rp(a,b))
+&(Rc1(a,c) -> exists d Rd(c,d))
+&(Rd(c,d) -> exists a Rc1(a,c))
+&(Rc2(a,c) -> exists g Rg(c,g))
+&(Rg(c,g) -> exists a Rc2(a,c))
+&(Rg(c,g) -> exists h Rh(g,h))
+&(Rh(g,h) -> exists c Rg(c,g))
+
+&(Rc1(a,c) -> exists b Rp(a,b))
+&(Rc2(a,c) ->  Rc1(a,c))
+
+&(R(a,b,c,d,e,f,g,h) <-> Rp(a,b) & Re(a,e) & Rf(a,f) & Rc1(a,c) & Rd(c,d) & Rc2(a,c) & Rg(c,g) & Rh(g,h))
+).
+
+end_of_list.
+

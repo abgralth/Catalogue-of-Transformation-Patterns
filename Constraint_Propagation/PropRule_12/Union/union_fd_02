@@ -1,0 +1,76 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%This time we check for a condition over a subset of the Left-Hand Side of the FD, and see that it work for any condition over a subset of 
+%attribute of LHS, notably excluding non-distinct sets of attributes as the preset 5 and 6 shows.
+%Although, it suffice that any of the first three preset hold individually for the propagation to occurs regardless of 
+%other composite conditions.
+
+%One more point on the non-distinct presets (5,6,7), if we change the condition to be != instead of a negation than they work (see preset 7bis).
+
+%CONSTRAINT A
+%Functional Dependency YZ->T
+all x all y all z all t all x1 all t1 ((S1(x,y,z,t) & S1(x1,y,z,t1))-> t=t1).
+all x all y all z all t all x1 all t1 ((S2(x,y,z,t) & S2(x1,y,z,t1))-> t=t1).
+
+%Guards
+%PRESET 1 (Y =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> y = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(y = cond)).
+
+%PRESET 2 (Y =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> z = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(z = cond)).
+
+%PRESET 3 (Y & Z =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> (y= cond & z = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(y= cond & z = cond)).
+
+%PRESET 4 (X & T =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & t = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & t = cond)).
+
+%PRESET 5 (X & Y =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond)).
+
+%PRESET 6 (X & Y & Z =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond & z = cond)).
+
+%PRESET 7 (X & Y & Z & T =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond & t = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> -(x= cond & y = cond & z = cond & t = cond)).
+
+%PRESET 7bis (X & Y & Z & T =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> (x= cond & y = cond & z = cond & t = cond)).
+%all x all y all z all t (S2(x,y,z,t) -> (x != cond & y != cond & z != cond & t != cond)).
+
+%PRESET 8 Different conditions FALSe
+all x all y all z all t (S1(x,y,z,t) -> (y= cond)).
+all x all y all z all t (S2(x,y,z,t) -> -(y= cond & z = cond)).
+
+%MAPPINGS A TO B
+all x all y all z all t (R(x,y,z,t) <-> S1(x,y,z,t) | S2(x,y,z,t)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all t all x1 all t1 ((R(x,y,z,t) & R(x1,y,z,t1))-> t=t1).
+
+end_of_list.
+

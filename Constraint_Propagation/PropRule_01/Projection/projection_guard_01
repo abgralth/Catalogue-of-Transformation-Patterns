@@ -1,0 +1,33 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a guard Y = cond
+%In this case, Z is projected away
+
+%CONSTRAINT A
+%Guard Dependency
+all x all z exists y (R(x,y,z) & y = cond).
+
+%MAPPINGS A TO B
+all x all y (S(x,y)<-> (exists z (R(x,y,z)))).
+
+end_of_list.
+
+formulas(goals).
+
+all x exists y (S(x,y) & y = cond).
+
+end_of_list.
+

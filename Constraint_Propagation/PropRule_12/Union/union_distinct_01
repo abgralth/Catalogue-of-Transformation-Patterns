@@ -1,0 +1,47 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%What about disjoints?
+%One of the only interesting aspect of this propagation would be to show that, if S1, S2 and S3 are all distinct with each other, the union of 
+%any two pair would remain distinct with the third table.
+
+%CONSTRAINT A
+%Disjoint 
+all x all y all z (-S1(x,y,z) | -S2(x,y,z)).
+all x all y all z (-S1(x,y,z) | -S3(x,y,z)).
+all x all y all z (-S2(x,y,z) | -S3(x,y,z)).
+
+%Guards
+%PRESET 1 (X =/!= cond) FAILS
+%all x all y all z (S1(x,y,z) -> x = cond).
+%all x all y all z (S2(x,y,z) -> -(x = cond)).
+
+%MAPPINGS A TO B
+all x all y all z (R1(x,y,z) <-> S1(x,y,z) | S2(x,y,z)).
+all x all y all z (R2(x,y,z) <-> S1(x,y,z) | S3(x,y,z)).
+all x all y all z (R3(x,y,z) <-> S2(x,y,z) | S3(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+%Main Goal
+((-R1(x,y,z) | -S3(x,y,z))
+&(-R2(x,y,z) | -S2(x,y,z))
+&(-R3(x,y,z) | -S1(x,y,z))).
+
+end_of_list.
+

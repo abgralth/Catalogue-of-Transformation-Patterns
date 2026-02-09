@@ -1,0 +1,52 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Moving onto binary operators, we here focus on the propagation of constraints under union
+
+%Testing with overlapping functional dependencies: here critical Overlap
+
+%CONSTRAINT A
+%Functional Dependency YZ->T, T->Z
+all x all y all z all t all x1 all t1 ((S1(x,y,z,t) & S1(x1,y,z,t1))-> t=t1).
+all x all y all z all t all x1 all t1 ((S2(x,y,z,t) & S2(x1,y,z,t1))-> t=t1).
+all x all y all z all t all x1 all y1 all z1 ((S1(x,y,z,t) & S1(x1,y1,z1,t))-> z=z1).
+all x all y all z all t all x1 all y1 all z1 ((S2(x,y,z,t) & S2(x1,y1,z1,t))-> z=z1).
+
+%Guards
+%We expect the only working case to be the one where we have a polarity shift on Y and on Z
+
+%PRESET 1 (Y,T PS) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> y = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(y = cond)).
+%all x all y all z all t (S1(x,y,z,t) -> t = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(t = cond)).
+
+%PRESET 2 (YZ,T PS) TRUE
+all x all y all z all t (S1(x,y,z,t) -> (y = cond & z =cond)).
+all x all y all z all t (S2(x,y,z,t) -> -(y = cond & z = cond)).
+all x all y all z all t (S1(x,y,z,t) -> t = cond).
+all x all y all z all t (S2(x,y,z,t) -> -(t = cond)).
+
+%MAPPINGS A TO B
+all x all y all z all t (R(x,y,z,t) <-> S1(x,y,z,t) | S2(x,y,z,t)).
+
+end_of_list.
+
+formulas(goals).
+
+((all x all y all z all t all x1 all t1 ((R(x,y,z,t) & R(x1,y,z,t1))-> t=t1))
+&(all x all y all z all t all x1 all y1 all z1 ((R(x,y,z,t) & R(x1,y1,z1,t))-> z=z1))).
+
+end_of_list.
+

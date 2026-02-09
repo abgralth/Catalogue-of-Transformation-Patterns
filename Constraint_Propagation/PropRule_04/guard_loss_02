@@ -1,0 +1,50 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Playing a bit around the propagation rules related to guard dependencies, I propose the following documents
+%The fourth propagation rules serves as a way of handling guard contradictions
+
+%In this file, we present the contradiction where, given two guards X, XY != cond, if -(X != cond) in S2, then XY = cond in R2 shouldn't
+%possibly hold.
+
+%CONSTRAINT A
+%Guards
+exists x exists y exists z (R(x,y,z) -> x != cond).
+%exists x exists y exists z (R(x,y,z) -> -(x = cond)).
+exists x exists y exists z (R(x,y,z) -> (x != cond & y != cond)).
+%exists x exists y exists z (R(x,y,z) -> -(x=cond & y = cond)).
+
+%MAPPINGS A TO B
+all x all y all z (S1(x,y,z) <-> R(x,y,z) & x != cond).
+all x all y all z (S2(x,y,z) <-> R(x,y,z) & -(x != cond)).
+
+end_of_list.
+
+formulas(goals).
+
+(
+%Basic verification that X = cond is true in S1 but false in S2.
+(S1(x,y,z) -> x != cond)
+&(S2(x,y,z) -> -(x != cond))
+
+%More interesting now concerns the propagation of XY = cond in both S1 and S2
+%First we see that this still holds in S1
+&(exists x exists y exists z (S1(x,y,z) -> (x != cond & y != cond)))
+
+%As for S2
+&(all x all y all z (S2(x,y,z) -> -(x != cond & y != cond)))
+).
+
+end_of_list.
+

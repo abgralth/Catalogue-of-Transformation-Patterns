@@ -1,0 +1,50 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%We present a series of formula showing the effects of constraint propagation for each pair of FOL constraint/RA operator
+%Starting with the propagation of a multivalue dependency Y ->> Z after a selection
+%In this case, we select based on a given condition cond over X, and we once again start over starting from S1, S2 established independently.
+
+%Similarly to the FD merge, as long as the polarity condition is over the LHS then the MVD can succesfully be propagated to R.
+%Alike the FD merge, changing the condition as we previously did in preset 3 also work this time.
+
+%CONSTRAINT A
+%Multivalue Dependency Y->>Z
+all x all y all z all t((exists x1 exists t1 S1(x1,y,z,t1) & exists z1 S1(x,y,z1,t)) -> S1(x,y,z,t)).
+all x all y all z all t((exists x1 exists t1 S2(x1,y,z,t1) & exists z1 S2(x,y,z1,t)) -> S2(x,y,z,t)).
+
+%Guards
+%PRESET 1 (X =/!= cond) FALSE
+%all x all y all z all t (S1(x,y,z,t) -> x = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(x = cond)).
+
+%PRESET 2 (Y =/!= cond) TRUE
+%all x all y all z all t (S1(x,y,z,t) -> y = cond).
+%all x all y all z all t (S2(x,y,z,t) -> -(y = cond)).
+
+%PRESET 3 (XY =/!= cond) TRUE
+all x all y all z all t (S1(x,y,z,t) -> (y=cond & x = cond)).
+all x all y all z all t (S2(x,y,z,t) -> (y != cond & x != cond)).
+
+%MAPPINGS A TO B
+all x all y all z all t (R(x,y,z,t) <-> S1(x,y,z,t) | S2(x,y,z,t)).
+
+end_of_list.
+
+formulas(goals).
+
+all x all y all z all t((exists x1 exists t1 R(x1,y,z,t1) & exists z1 R(x,y,z1,t)) -> R(x,y,z,t)).
+
+end_of_list.
+

@@ -1,0 +1,43 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossy TP for both loss.
+%We have two FD, one of which gets projected away and lost and we want to check the both loss formula
+%Here, we have use for complement Rc:(x,t,u)
+
+%CONSTRAINT A
+%Functional Dependency y -> z
+all x all y all z all t all u all x1 all z1 all t1 all u1 ((R(x,y,z,t,u) & R(x1,y,z1,t1,u1)) ->  z=z1).
+%Functional Dependency t -> u
+all x all y all z all t all u all x1 all y1 all z1 all u1 ((R(x,y,z,t,u) & R(x1,y1,z1,t,u1)) ->  u=u1).
+
+%MAPPINGS A TO B
+all x all y all z (Rp(x,y,z) -> exists t exists u R(x,y,z,t,u)).
+
+% (Rp(x,y,z) & Rp(x1,y,z1)) ->  z=z1
+%  R(x,y,z,t,u) -> Rp(x,y,z) & Rc(x,t,u)
+
+end_of_list.
+
+formulas(goals).
+
+(((Rp(x,y,z) & Rp(x1,y,z1)) ->  z=z1)
+&(R(x,y,z,t,u) -> Rp(x,y,z) & Rc(x,t,u)))
+->
+(((R(x,y,z,t,u) & R(x1,y,z1,t1,u1)) ->  z=z1)
+&((R(x,y,z,t,u) & R(x1,y1,z1,t,u1)) ->  u=u1)
+&(Rp(x,y,z) -> exists t exists u R(x,y,z,t,u))).
+
+end_of_list.
+
