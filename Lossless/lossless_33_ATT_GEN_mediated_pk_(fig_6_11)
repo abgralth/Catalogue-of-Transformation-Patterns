@@ -1,0 +1,78 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 600).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%TP for the attribute generalization of two tables R1, R2 with shared attributes and PKs, under a third one R
+
+%Constraints A
+%Primary Keys
+all x all u all u1 ((R(x,u) & R(x,u1)) -> u=u1).
+all x all y all z all y1 all z1 ((R1(x,y,z) & R1(x,y1,z1)) -> ((y=y1) & (z=z1))).
+all x all y all t all y1 all t1 ((R2(x,y,t) & R2(x,y1,t1)) -> ((y=y1) & (t=t1))).
+
+%Inclusion Dependencies
+all x all y all z (R1(x,y,z) -> exists u R(x,u)).
+all x all y all t (R2(x,y,t) -> exists u R(x,u)).
+
+%Covering
+all x all u (R(x,u) <-> exists y exists z exists t (R1(x,y,z) | R2(x,y,t))).
+
+%Constraints B
+%Primary Key
+all x all y all u all y1 all u1 ((Rp(x,y,u) & Rp(x,y1,u1)) -> ((y=y1) & (u=u1))).
+all x all z all z1 ((R1p(x,z) & R1p(x,z1)) -> z=z1).
+all x all t all t1 ((R2p(x,t) & R2p(x,t1)) -> t=t1).
+
+%Inclusion Dependency
+all x all z (R1p(x,z) -> exists y exists u Rp(x,y,u)).
+all x all t (R2p(x,t) -> exists y exists u Rp(x,y,u)).
+
+%Mappings A
+all x all y all u (Rp(x,y,u) <-> exists z exists t ((R1(x,y,z) | R2(x,y,t)) & R(x,u))).
+all x all z (R1p(x,z) <-> exists y R1(x,y,z)).
+all x all t (R2p(x,t) <-> exists y R2(x,y,t)).
+
+%Mappings B
+all x all y all z (R1(x,y,z) <-> exists u R1p(x,z) & Rp(x,y,u)).
+all x all y all t (R2(x,y,t) <-> exists u R2p(x,t) & Rp(x,y,u)).
+all x all u (R(x,u) <-> exists y Rp(x,y,u)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(x,u) & R(x,u1)) -> u=u1)
+&((R1(x,y,z) & R1(x,y1,z1)) -> ((y=y1) & (z=z1)))
+&((R2(x,y,t) & R2(x,y1,t1)) -> ((y=y1) & (t=t1)))
+&(R1(x,y,z) -> exists u R(x,u))
+&(R2(x,y,t) -> exists u R(x,u))
+&(R(x,u) <-> exists y exists z exists t (R1(x,y,z) | R2(x,y,t)))
+&(Rp(x,y,u) <-> exists z exists t ((R1(x,y,z) | R2(x,y,t)) & R(x,u)))
+&(R1p(x,z) <-> exists y R1(x,y,z))
+&(R2p(x,t) <-> exists y R2(x,y,t)))
+<->
+(((Rp(x,y,u) & Rp(x,y1,u1)) -> ((y=y1) & (u=u1)))
+&((R1p(x,z) & R1p(x,z1)) -> z=z1)
+&((R2p(x,t) & R2p(x,t1)) -> t=t1)
+&(R1p(x,z) -> exists y exists u Rp(x,y,u))
+&(R2p(x,t) -> exists y exists u Rp(x,y,u))
+&(R1(x,y,z) <-> exists u R1p(x,z) & Rp(x,y,u))
+&(R2(x,y,t) <-> exists u R2p(x,t) & Rp(x,y,u))
+&(R(x,u) <-> exists y Rp(x,y,u))).
+
+end_of_list.
+

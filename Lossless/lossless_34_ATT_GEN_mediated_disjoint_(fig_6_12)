@@ -1,0 +1,74 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 600).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 600).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%TP for the attribute generalization of two tables R1, R2 with shared attributes and PKs, under a third one R
+%This time, we don't use primary key but disjointness for generalization.
+%More precisely, here we want to absorb into Rp the relation R2 which does not satisfy a condition cond
+
+%Constraints A
+%Inclusion Dependencies
+all x all y all z (R1(x,y,z) -> R(x)).
+all x all y all t (R2(x,y,t) -> R(x)).
+
+%Guard
+all x all y all z (R1(x,y,z) -> x = cond).
+all x all y all t (R2(x,y,t) -> -(x = cond)).
+
+%Disjoint
+all x all y all z all t (-R1(x,y,z) | -R2(x,y,t)).
+all x (R(x) <-> exists y exists z exists t (R1(x,y,z) | R2(x,y,t))).
+
+%Constraints B
+%Inclusion Dependency
+all x all y all z (R1p(x,y,z) -> Rp(x,y,z)).
+
+%Guard
+all x all y all z (R1p(x,y,z) -> x = cond).
+all y all z exists x (Rp(x,y,z) -> x = cond).
+
+%Mappings A
+all x all y all z (Rp(x,y,z) <-> exists z1 exists z2 ((R1(x,y,z1) | R2(x,y,z2)) & R(x))).
+all x all y all z (R1p(x,y,z) <-> R1(x,y,z)).
+
+%Mappings B
+all x all y all z (R1(x,y,z) <-> R1p(x,y,z)).
+all x all y all t (R2(x,y,t) <-> Rp(x,y,t) & -(R1p(x,y,z))).
+all x (R(x) <-> exists y exists z Rp(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R1(x,y,z) -> R(x))
+&(R2(x,y,t) -> R(x))
+&(R1(x,y,z) -> x = cond)
+&(R2(x,y,t) -> -(x = cond))
+&(-R1(x,y,z) | -R2(x,y,t))
+&(R(x) <-> exists y exists z exists t (R1(x,y,z) | R2(x,y,t)))
+&(Rp(x,y,z) <-> exists z1 exists z2 ((R1(x,y,z1) | R2(x,y,z2)) & R(x)))
+&(R1p(x,y,z) <-> R1(x,y,z)))
+<->
+((R1p(x,y,z) -> Rp(x,y,z))
+&(R1(x,y,z) <-> R1p(x,y,z))
+&(R1p(x,y,z) -> x = cond))
+&(all y all z exists x (Rp(x,y,z) -> x = cond)
+&(R2(x,y,t) <-> Rp(x,y,t) & -(R1p(x,y,z)))
+&(R(x) <-> exists y exists z Rp(x,y,z))).
+
+end_of_list.
+

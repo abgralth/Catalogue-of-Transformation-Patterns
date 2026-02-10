@@ -1,0 +1,61 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%TP for attribute generalization in isA pattern
+%Here, we have, let say, an inclusion dependency between R and S based on X.
+%We want to add another one, this time based on Y
+%This require to change a bit how w write inclusion dependency
+
+%Constraints A
+%Guard
+all x all y exists z (R(x,y,z) -> z = cond).
+all x all y all z (S(x,y,z) -> z = cond).
+
+%Inclusion Dependency, S[X] /in R[X]
+all x all y all z (S(x,y,z) -> exists y1 exists z1 R(x,y1,z1)).
+
+%Constraints B
+%Guard
+all x all y exists z (Rp(x,y,z) -> z = cond).
+all x all y all z (Sp(x,y,z) -> z = cond).
+
+%Inclusion Depedency, Sp[X,Y] /in Rp[X,Y]
+all x all y all z (Sp(x,y,z) -> exists z2 Rp(x,y,z2)).
+
+%Mappings A
+all x all z (Sp(x,y,z) <-> S(x,y,z)).
+all x all y (Rp(x,y,z) <-> R(x,y,z)).
+
+%Mappings B
+all x all y all z (S(x,y,z) <-> Sp(x,y,z)).
+all x all y all z (R(x,y,z) <-> Rp(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((all x all y exists z (R(x,y,z) -> z = cond))
+&(S(x,y,z) -> z = cond)
+&(S(x,y,z) -> exists y1 exists z1 R(x,y1,z1))
+&(Sp(x,y,z) <-> S(x,y,z))
+&(Rp(x,y,z) <-> R(x,y,z)))
+<->
+((all x all y exists z (Rp(x,y,z) -> z = cond))
+&(Sp(x,y,z) -> z = cond)
+&(Sp(x,y,z) -> exists z2 Rp(x,y,z2))
+&(S(x,y,z) <-> Sp(x,y,z))
+&(R(x,y,z) <-> Rp(x,y,z))).
+
+end_of_list.
+

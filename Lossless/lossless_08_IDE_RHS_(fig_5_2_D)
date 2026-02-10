@@ -1,0 +1,47 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%IND TP for RHS redundancy removal
+%In this case, we start from a state in which two INDs direct to the same RHS, one within R and another between R and Rz
+
+%Constraint A
+all x all y all z (R(x,y,z) -> exists x1 exists y1 (R(x1,y1,y))).
+all x all y all z (R(x,y,z) -> Rz(y)).
+
+%Constraint B
+all x all y all z (Rp(x,y,z) -> Rzp(y)).
+
+%Mappings A
+all x all y all z (Rp(x,y,z) <-> R(x,y,z)).
+all x (Rzp(x) <-> Rz(x)).
+
+%Mappings B
+all x all y all z (R(x,y,z) <-> Rp(x,y,z)).
+all x (Rz(x) <-> Rzp(x)).
+
+end_of_list.
+
+formulas(goals).
+
+((R(x,y,z) -> exists x1 exists y1 (R(x1,y1,y)))
+&(R(x,y,z) -> Rz(y))
+&(Rp(x,y,z) <-> R(x,y,z))
+&(Rzp(x) <-> Rz(x)))
+<->
+((Rp(x,y,z) -> Rzp(y))
+&(R(x,y,z) <-> Rp(x,y,z))
+&(Rz(x) <-> Rzp(x))).
+
+end_of_list.
+

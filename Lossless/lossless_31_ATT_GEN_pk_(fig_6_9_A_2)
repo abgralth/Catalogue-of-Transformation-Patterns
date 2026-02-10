@@ -1,0 +1,87 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+if(Mace4).   % Additional input for Mace4
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%TP for the attribute generalization of two tables R1, R2 with shared attributes and same primary key over X
+%Failed to work for a long time, with no result returned at all, even after waiting the equivalent of 
+%several episodes of fate stay night: unlimited blade work, so about ~45min and more.
+%The problem came from the definition of Rp mapping
+%The old version being all x all y (Rp(x,y) <-> exists z exists t (R1(x,y,z) | R2(x,y,t))).
+%After checking for covering betwen Rp, R1p and R2p, I understood that this mapping did not represent well the union of a projection of X,Y
+%This is now likely solved as the new mapping used allow for a proof to be returned
+
+%Constraints A
+all x all y all z all y1 all z1 ((R1(x,y,z) & R1(x,y1,z1)) -> ((y=y1) & (z=z1))).
+all x all y all t all y1 all t1 ((R2(x,y,t) & R2(x,y1,t1)) -> ((y=y1) & (t=t1))).
+
+%all x all y all z all y1 all z1 ((R1(x,y,z) & R1(x,y1,z1)) -> y=y1).
+%all x all y all t all y1 all t1 ((R2(x,y,t) & R1(x,y1,t1)) -> y=y1).
+
+%all x all y all z all t (-R1(x,y,z) | -R2(x,y,t)).
+
+%Constraints B
+%Primary Key
+all x all y all y1 ((Rp(x,y) & Rp(x,y1)) -> y=y1).
+all x all z all z1 ((R1p(x,z) & R1p(x,z1)) -> z=z1).
+all x all t all t1 ((R2p(x,t) & R2p(x,t1)) -> t=t1).
+
+%Inclusion Dependency
+all x all z (R1p(x,z) -> exists y Rp(x,y)).
+all x all t (R2p(x,t) -> exists y Rp(x,y)).
+
+%Let's try with a covering
+%all x all y (Rp(x,y) -> exists z exists t R1p(x,z) | R2p(x,t)).
+
+%all x all z all t (-R1p(x,z) | -R2p(x,t)).
+
+%Mappings A
+%I think writting all z all t (R1(x,y,z) | R2(x,y,t)) does a sort of intersection, which is not good
+%all x all y (Rp(x,y) <-> all z all t (R1(x,y,z) | R2(x,y,t))).
+%all x all y (Rp(x,y) <-> exists z exists t (R1(x,y,z) | R2(x,y,t))).
+all x all y (Rp(x,y) <-> exists z exists t (R1(x,y,z) | R2(x,y,t)) & R1(x,y,z) & R2(x,y,t)).
+
+all x all z (R1p(x,z) <-> exists y R1(x,y,z)).
+all x all t (R2p(x,t) <-> exists y R2(x,y,t)).
+
+%Mappings B
+all x all y all z (R1(x,y,z) <-> R1p(x,z) & Rp(x,y)).
+all x all y all t (R2(x,y,t) <-> R2p(x,t) & Rp(x,y)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R1(x,y,z) & R1(x,y1,z1)) -> ((y=y1) & (z=z1)))
+&((R2(x,y,t) & R2(x,y1,t1)) -> ((y=y1) & (t=t1)))
+&(Rp(x,y) <-> exists z exists t (R1(x,y,z) | R2(x,y,t)) & R1(x,y,z) & R2(x,y,t))
+&(R1p(x,z) <-> exists y R1(x,y,z))
+&(R2p(x,t) <-> exists y R2(x,y,t)))
+<->
+(((Rp(x,y) & Rp(x,y1)) -> y=y1)
+&((R1p(x,z) & R1p(x,z1)) -> z=z1)
+&((R2p(x,t) & R2p(x,t1)) -> t=t1)
+&(R1p(x,z) -> exists y Rp(x,y))
+&(R2p(x,t) -> exists y Rp(x,y))
+&(R1(x,y,z) <-> R1p(x,z) & Rp(x,y))
+&(R2(x,y,t) <-> R2p(x,t) & Rp(x,y))).
+
+end_of_list.
+

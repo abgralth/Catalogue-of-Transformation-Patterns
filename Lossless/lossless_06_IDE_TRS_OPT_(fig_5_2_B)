@@ -1,0 +1,53 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Transformation Pattern for Inclusion Dependency
+%As seen in the thesis, this concerns the gestion of transitive INDs,
+%and notably for the state in which two INDs coming from a relation and a singleton table target the same singleton table
+%The mappings are trivial as this operation amount to redundancy reduction
+
+%Constraint A
+all x all y all z (R(x,y,z) -> Rz(y)).
+all y  (Ry(y) -> Rz(y)).
+
+%Constraint B
+all y  (Ryp(y) -> Rzp(y)).
+
+%Mappings A
+all x all y all y (R(x,y,z) <-> Rp(x,y,z)).
+all y (Ry(y) <-> Ryp(y)).
+all z (Rz(z) <-> Rzp(z)).
+
+%Mappings B
+all x all y all y (Rp(x,y,z) <-> R(x,y,z)).
+all y (Ryp(y) <-> Ry(y)).
+all z (Rzp(z) <-> Rz(z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R(x,y,z) -> Rz(y))
+&(Ry(y) -> Rz(y))
+&(Rp(x,y,z) <-> R(x,y,z))
+&(Ryp(y) <-> Ry(y))
+&(Rzp(z) <-> Rz(z)))
+<->
+((Ryp(y) -> Rzp(y))
+&(R(x,y,z) <-> Rp(x,y,z))
+&(Ry(y) <-> Ryp(y))
+&(Rz(z) <-> Rzp(z))).
+
+end_of_list.
+

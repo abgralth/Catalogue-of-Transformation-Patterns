@@ -1,0 +1,73 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 600).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%TP for the attribute generalization of two tables R1, R2 with under a third one R
+%Here, the idea is to set R1, R2 as disjoint covers of R, meaning that their union Ru should lead to a full ind= between Ru and Rp
+
+%Constraints A
+%Inclusion Dependencies
+all x all y all z (R1(x,y,z) -> exists u R(x,u)).
+all x all y all z (R2(x,y,z) -> exists u R(x,u)).
+
+%Guard
+all x all y all z (R1(x,y,z) & y = $F).
+all x all y all z (R2(x,y,z) & -(y = $F)).
+
+%Disjoint/Covering
+all x all y all z (-R1(x,y,z) | -R2(x,y,z)).
+all x all t  (R(x,t) <-> exists y exists z (R1(x,y,z) | R2(x,y,z))).
+
+%Constraints B
+%Inclusion Dependency
+all x all y all z (Ru(x,y,z) -> exists t Rp(x,t)).
+all x all t (Rp(x,t) -> exists y exists z Ru(x,y,z)).
+
+%Guard
+all x all z exists y (Ru(x,y,z) & y = $F).
+
+%Mappings A
+all x all t (Rp(x,t) <-> R(x,t)).
+all x all y all z (Ru(x,y,z) <-> R1(x,y,z) | R2(x,y,z)).
+
+%Mappings B
+all x all t (R(x,t) <-> Rp(x,t)).
+all x all y all z (R1(x,y,z) <-> Ru(x,y,z) & y = $F).
+all x all y all t (R2(x,y,t) <-> Ru(x,y,z) & -(Ru(x,y,z) & y = $F)).
+
+end_of_list.
+
+formulas(goals).
+
+((R1(x,y,z) -> exists u R(x,u))
+&(R2(x,y,z) -> exists u R(x,u))
+&(R1(x,y,z) & y = $F)
+&(R2(x,y,z) & -(y = $F))
+&(-R1(x,y,z) | -R2(x,y,z))
+&(R(x,t) -> exists y exists z (R1(x,y,z) | R2(x,y,z)))
+&(Rp(x,t) <-> R(x,t))
+&(Ru(x,y,z) <-> R1(x,y,z) | R2(x,y,z)))
+<->
+((Ru(x,y,z) -> exists t Rp(x,t))
+&(Rp(x,t) <-> exists y exists z Ru(x,y,z))
+&(all x all z exists y (Ru(x,y,z) & y = $F))
+&(R(x,t) <-> Rp(x,t))
+&(R1(x,y,z) <-> Ru(x,y,z) & y = $F)
+&(R2(x,y,t) <-> Ru(x,y,z) & -(Ru(x,y,z) & y = $F))).
+
+end_of_list.
+

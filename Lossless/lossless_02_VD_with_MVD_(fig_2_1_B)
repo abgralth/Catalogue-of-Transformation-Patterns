@@ -1,0 +1,50 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless vertical decomposition with multivalued dependency
+
+%CONSTRAINT A
+%Multivalued Dependency mvd[R](x,z)
+all x all y all z all y1 all z1 ((exists y1 R(x,y1,z) & exists z1 R(x,y,z1)) -> R(x,y,z)).
+
+%CONSTRAINT B
+%Composite Primary Key pk[S](xy)
+all x all y all x1 all y1 (S(x,y) & S(x1,y1) -> (x=x1 & y=y1)).
+
+%Inclusion Dependency ind^=[S,T](x,x)
+all x all y (S(x,y) -> exists z T(x,z)).
+all x all y (T(x,y) -> exists z S(x,z)).
+
+%MAPPINGS A TO B
+all x all y (S(x,y) <-> exists z R(x,y,z)).
+all x all z (T(x,z) <-> exists y R(x,y,z)).
+
+%MAPPING B TO A
+all x all y all z (R(x,y,z) <-> S(x,y) & T(x,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((all y1 all z1 ((exists y1 R(x,y1,z) & exists z1 R(x,y,z1)) -> R(x,y,z)))
+&(R(x,y,z) <-> S(x,y) & T(x,z)))
+<->
+((all x1 all y1 (S(x,y) & S(x1,y1) -> (x=x1 & y=y1)))
+&(S(x,y) -> exists z T(x,z))
+&(T(x,y) -> exists z S(x,z))
+&(S(x,y) <-> exists z R(x,y,z))
+&(T(x,z) <-> exists y R(x,y,z))).
+
+end_of_list.
+

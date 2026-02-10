@@ -1,0 +1,54 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Transformation Pattern for Inclusion Dependency
+%As seen in the thesis, this concerns the gestion of transitive INDs,
+%This time we have two ind x->y and y->z and the current state is right after a IDE on x->y, leading to the creation of Ry(y)
+%This also notably duplicate the the inclusion dependency into Ry, resulting in an internal y->z in R and another from Ry
+%This TP simply extract z as its own table Rz and update the inclusion accordingly, removing redundancies in the process
+
+%Constraint A
+all x all y all z (R(x,y,z) -> exists x1 exists y1 R(x1,y1,y)).
+all y (Ry(y) -> exists x exists y1 R(x,y1,y)).
+
+%Constraint B
+all x all y all z (Rp(x,y,z) -> Rz(y)).
+all y (Ryp(y) -> Rz(y)).
+
+%Mappings A
+all x all y all y (R(x,y,z) <-> Rp(x,y,z)).
+all y (Ry(y) <-> Ryp(y)).
+
+%Mappings B
+all x all y all y (Rp(x,y,z) <-> R(x,y,z)).
+all y (Ryp(y) <-> Ry(y)).
+all z (Rz(z) <-> exists x exists y R(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R(x,y,z) -> exists x1 exists y1 R(x1,y1,y))
+&(Ry(y) -> exists x exists y1 R(x,y1,y))
+&(Rp(x,y,z) <-> R(x,y,z))
+&(Ryp(y) <-> Ry(y))
+&(Rz(z) <-> exists x exists y R(x,y,z)))
+<->
+((Rp(x,y,z) -> Rz(y))
+&(Ry(y) <-> Ryp(y))
+&(R(x,y,z) <-> Rp(x,y,z))
+&(Ry(y) <-> Ryp(y))).
+
+end_of_list.
+

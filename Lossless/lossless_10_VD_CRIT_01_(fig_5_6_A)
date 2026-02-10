@@ -1,0 +1,65 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Vertical Decomposition with Overlaps like XY -> Z, Z -> X
+%CONSTRAINT A
+%Functional Dependency XY->Z
+all x all y all z all t all z1 all t1 ((R(x,y,z,t) & R(x,y,z1,t1))-> z=z1).
+%Functional Dependency Z->XT
+all x all y all z all t all x1 all y1 all t1 ((R(x,y,z,t) & R(x1,y1,z,t1))-> (x=x1)).
+
+%CONSTRAINT B
+%Inclusion Dependency Fixing
+all x all y all z (Rpz(x,y,z) -> exists t Rp(x,y,z,t)).
+all x all y all z all t (Rp(x,y,z,t)->  Rpz(x,y,z)).
+
+all x all z (Rpx(x,z) -> exists y exists t Rp(x,y,z,t)).
+all x all y all z all t (Rp(x,y,z,t)->  Rpx(x,z)).
+
+%Primary Key & Functional Dependency
+all x all y all z all z1 ((Rpz(x,y,z) & Rpz(x,y,z1)) -> z=z1).
+all x all z all x1((Rpx(x,z) & Rpx(x1,z))-> (x=x1)).
+
+%MAPPINGS A TO B
+all x all y all z all t (Rp(x,y,z,t) <-> R(x,y,z,t)).
+all x all y all z (Rpz(x,y,z) <-> exists t R(x,y,z,t)).
+all x all z (Rpx(x,z) <-> exists y exists t R(x,y,z,t)).
+
+%MAPPINGS B TO A
+all x all y all z all t (R(x,y,z,t) <-> (Rpz(x,y,z) & Rp(x,y,z,t) & Rpx(x,z))).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(x,y,z,t) & R(x,y,z1,t1))-> z=z1)
+&((R(x,y,z,t) & R(x1,y1,z,t1))-> (x=x1))
+&(Rp(x,y,z,t) <-> R(x,y,z,t))
+&(Rpz(x,y,z) <-> exists t R(x,y,z,t))
+&(Rpx(x,z) <-> exists y exists t R(x,y,z,t)))
+<->
+((Rpz(x,y,z) -> exists t Rp(x,y,z,t))
+&(Rp(x,y,z,t)->  Rpz(x,y,z))
+&(Rpx(x,z) -> exists y exists t Rp(x,y,z,t))
+&(Rp(x,y,z,t)->  Rpx(x,z))
+&((Rpz(x,y,z) & Rpz(x,y,z1)) -> z=z1)
+&((Rpx(x,z) & Rpx(x1,z))-> (x=x1))
+&(R(x,y,z,t) <-> (Rpz(x,y,z) & Rp(x,y,z,t) & Rpx(x,z)))).
+
+end_of_list.
+

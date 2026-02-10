@@ -1,0 +1,62 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%TP for attribute generalization in isA pattern
+%Here, we have X as a PK and we want to set Y as another possible PK in both Rp and Sp
+
+%Constraints A
+%Primary Key
+all x all y all z all y1 all z1 ((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1)).
+all x all y all z all y1 all z1 ((S(x,y,z) & S(x,y1,z1)) -> (y=y1 & z=z1)).
+
+%Inclusion Dependency, S[X] /in R[X]
+all x all y all z (S(x,y,z) -> exists z1 R(x,y,z1)).
+
+%Constraints B
+%Primary Key
+all x all y all z all y1 all z1 ((Rp(x,y,z) & Rp(x,y1,z1)) -> (y=y1 & z=z1)).
+all x all y all z all y1 all z1 ((Sp(x,y,z) & Sp(x,y1,z1)) -> (y=y1 & z=z1)).
+
+all x all y all z all x1 all z1 ((Sp(x,y,z) & Sp(x1,y,z1)) -> (x=x1 & z=z1)).
+
+%Inclusion Depedency, Sp[X,Y] /in Rp[X,Y]
+all x all y all z (Sp(x,y,z) -> exists z1 Rp(x,y,z1)).
+
+%Mappings A
+all x all z (Sp(x,y,z) <-> S(x,y,z)).
+all x all y (Rp(x,y,z) <-> R(x,y,z)).
+
+%Mappings B
+all x all y all z (S(x,y,z) <-> Sp(x,y,z)).
+all x all y all z (R(x,y,z) <-> Rp(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1))
+&((S(x,y,z) & S(x,y1,z1)) -> (y=y1 & z=z1))
+&(S(x,y,z) -> exists z1 R(x,y,z1))
+&(Sp(x,y,z) <-> S(x,y,z))
+&(Rp(x,y,z) <-> R(x,y,z)))
+<->
+(((Rp(x,y,z) & Rp(x,y1,z1)) -> (y=y1 & z=z1))
+&((Sp(x,y,z) & Sp(x,y1,z1)) -> (y=y1 & z=z1))
+&((Sp(x,y,z) & Sp(x1,y,z1)) -> (x=x1 & z=z1))
+&(Sp(x,y,z) -> exists z1 Rp(x,y,z1))
+&(S(x,y,z) <-> Sp(x,y,z))
+&(R(x,y,z) <-> Rp(x,y,z))).
+
+end_of_list.
+

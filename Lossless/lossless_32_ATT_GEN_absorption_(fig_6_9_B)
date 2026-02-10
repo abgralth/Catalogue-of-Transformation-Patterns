@@ -1,0 +1,50 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 600).
+end_if.
+
+if(Prover9). % Additional input for Prover9
+assign(max_seconds, -1).
+end_if.
+
+formulas(assumptions).
+
+%TP for the attribute generalization of two tables R1, R2 with shared attributes and R1, R2 distinct
+%Here, R absorb R2 as it has no distinct attributes
+
+%Constraints A
+all x all y exists z (-R1(x,y,z) | -R2(x,y)).
+
+%Constraints B
+%Inclusion Dependency
+all x all z (R1p(x,z) -> exists y Rp(x,y)).
+
+%Mappings A
+all x all y (Rp(x,y) <-> exists z (R1(x,y,z) | R2(x,y))).
+all x all z (R1p(x,z) <-> exists y R1(x,y,z)).
+
+%Mappings B
+all x all y all z (R1(x,y,z) <-> R1p(x,z) & Rp(x,y)).
+all x all y (R2(x,y) <-> Rp(x,y) & -(R1p(x,t) & Rp(x,y))).
+
+end_of_list.
+
+formulas(goals).
+
+((all x all y exists z (-R1(x,y,z) | -R2(x,y)))
+&(Rp(x,y) <-> exists z (R1(x,y,z) | R2(x,y)))
+&(R1p(x,z) <-> exists y R1(x,y,z)))
+<->
+((R1p(x,z) -> exists y Rp(x,y))
+&(R1(x,y,z) <-> R1p(x,z) & Rp(x,y))
+&(R2(x,y) <-> Rp(x,y) & -(R1p(x,t) & Rp(x,y)))).
+
+end_of_list.
+

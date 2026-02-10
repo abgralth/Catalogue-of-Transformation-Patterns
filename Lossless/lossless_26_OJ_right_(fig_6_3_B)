@@ -1,0 +1,43 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern, perhaps, for Left Outer-Join
+
+%CONSTRAINT A
+%Inclusion Dependency
+all x all y (R1(x,y) -> exists z R2(x,z)).
+
+%CONSTRAINT B
+all x exists y all z (R(x,y,z) -> y = $F).
+
+%MAPPINGS A TO B
+all x all y all z (R(x,y,z) <-> ((R1(x,y) & R2(x,z)) | (R2(x,z) & -(R1(x,y) & R2(x,z))) & R1(x,$F))).
+
+%MAPPINGS B TO A
+all x all y (R1(x,y) <-> exists z R(x,y,z)& y != $F).
+all x all z (R2(x,z) <-> exists y R(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R1(x,y) -> exists z R2(x,z))
+&(R1(x,y) <-> exists z R(x,y,z)& y != $F)
+&(R2(x,z) <-> exists y R(x,y,z)))
+<->
+((all x exists y all z (R(x,y,z) -> y = $F))
+&(R(x,y,z) <-> ((R1(x,y) & R2(x,z)) | (R2(x,z) & -(R1(x,y) & R2(x,z))) & R1(x,$F)))).
+
+end_of_list.
+

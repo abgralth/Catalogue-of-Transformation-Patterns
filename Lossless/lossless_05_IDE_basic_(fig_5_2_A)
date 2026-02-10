@@ -1,0 +1,46 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Transformation Pattern for Inclusion Dependency Extraction
+%Here, we have a table R(x,y,z) with z subset-equal of x
+
+%Constraint A
+all x all y all z (R(x,y,z) -> exists y1 exists z1 (R(z,y1,z1))).
+
+%Constraint B
+all x all y all z (R1(x,y,z) -> Rx(z)).
+%all x all y all z (R1(x,y,z) -> Rx(x)).
+%all x (Rx(x) -> exists y exists z (R1(x,y,z))).
+
+%Mappings A
+all x all y all z (R1(x,y,z) <-> R(x,y,z)).
+all x (Rx(x) <-> exists y exists z (R(x,y,z))).
+
+%Mappings B
+all x all y all z (R(x,y,z) <-> R1(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R(x,y,z) -> exists y1 exists z1 (R(z,y1,z1)))
+&(R1(x,y,z) <-> R(x,y,z))
+&(Rx(x) <-> exists y exists z (R(x,y,z))))
+<->
+((R1(x,y,z) -> Rx(z))
+&(R(x,y,z) <-> R1(x,y,z))
+).
+
+end_of_list.
+

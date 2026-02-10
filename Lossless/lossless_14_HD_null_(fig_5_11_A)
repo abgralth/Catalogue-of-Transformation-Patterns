@@ -1,0 +1,49 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Horinzontal Decomposition with null values
+%Testing for YZ jointly nullable
+
+%CONSTRAINT A
+exists x exists y exists z(R(x,y,z) -> (y = $F & z = $F)).
+
+%CONSTRAINT B
+
+all x all y all z (R1(x,y,z) -> (y = $F & z = $F)).
+all x all y all z (R2(x,y,z) -> -(y = $F & z = $F)).
+
+%MAPPINGS A TO B
+all x all y all z (R1(x,y,z) <-> (R(x,y,z) & (y = $F & z = $F))).
+%all x all y all z (R2(x,y,z) <-> -(R(x,y,z) & R1(x,y,z))).
+all x all y all z (R2(x,y,z) <-> (R(x,y,z) & -(y = $F & z = $F))).
+
+%MAPPINGS B TO A
+all x all y all z (R(x,y,z) <-> R1(x,y,z) | R2(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+%all x exists y exists z (R2(x,y,z) -> (y = $F & z = $F)).
+
+((exists x exists y exists z(R(x,y,z) -> (y = $F & z = $F)))
+&(R1(x,y,z) <-> (R(x,y,z) & (y = $F & z = $F)))
+&(R2(x,y,z) <-> (R(x,y,z) & -(y = $F & z = $F))))
+<->
+((R1(x,y,z) -> (y = $F & z = $F))
+&(R2(x,y,z) -> -(y = $F & z = $F))
+&(R(x,y,z) <-> R1(x,y,z) | R2(x,y,z))).
+
+end_of_list.
+

@@ -1,0 +1,56 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%TP for attribute generalization, here S is a subtype of R with its some redundant attribute in y
+
+%Constraints A
+%Primary Key
+all x all y all z all y1 all z1 ((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1)).
+all x all y all z all y1 all z1 ((S(x,y,z) & S(x,y1,z1)) -> (y=y1 & z=z1)).
+
+%Inclusion Dependency
+all x all y all z (S(x,y,z) -> R(x,y,z)).
+
+%Constraints B
+all x all y all z all y1 all z1 ((Rp(x,y,z) & Rp(x,y1,z1)) -> (y=y1 & z=z1)).
+all x all z all z1 ((Sp(x,z) & Sp(x,z1)) ->  z=z1).
+
+all x all z (Sp(x,z) -> exists y Rp(x,y,z)).
+
+%Mappings A
+all x all z (Sp(x,z) <-> exists y S(x,y,z)).
+all x all y (Rp(x,y,z) <-> R(x,y,z)).
+
+%Mappings B
+all x all y all z (S(x,y,z) <-> exists y (Sp(x,z) & Rp(x,y,z))).
+all x all y all z (R(x,y,z) <-> Rp(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+(((R(x,y,z) & R(x,y1,z1)) -> (y=y1 & z=z1))
+&((S(x,y,z) & S(x,y1,z1)) -> (y=y1 & z=z1))
+&(S(x,y,z) -> R(x,y,z))
+&(Sp(x,z) <-> exists y S(x,y,z))
+&(Rp(x,y,z) <-> R(x,y,z)))
+<->
+(((Rp(x,y,z) & Rp(x,y1,z1)) -> (y=y1 & z=z1))
+&((Sp(x,z) & Sp(x,z1)) ->  z=z1)
+&(Sp(x,z) -> exists y Rp(x,y,z))
+&(S(x,y,z) <-> exists y (Sp(x,z) & Rp(x,y,z)))
+&(R(x,y,z) <-> Rp(x,y,z))).
+
+end_of_list.
+

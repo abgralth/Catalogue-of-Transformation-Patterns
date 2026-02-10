@@ -1,0 +1,54 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Conditional Vertical Decomposition
+
+%CONSTRAINT A
+%Conditional Functional Dependency Y->Z (Y != NULL)
+all x all y all z all x1 all z1 ((r(x,y,z) & r(x1,y,z1) & y!= $F)-> z=z1).
+
+%CONSTRAINT B
+%Set Guards
+all x all y all z (t(x,y,z) -> y = $F).
+all x all y (s1(x,y) -> y != $F).
+all y all z (s2(y,z) -> y != $F).
+
+%Functional Dependency
+all y all z all z1 ((s2(y,z) & s(y,z1))-> z=z1).
+
+%MAPPINGS A TO B
+all x all y (s1(x,y)<-> exists z r(x,y,z) & y != $F).
+all y all z (s2(y,z)<-> exists x r(x,y,z) & y != $F).
+all x all y all z(t(x,y,z)<-> (r(x,y,z)) & y = $F).
+
+%MAPPINGS B TO A
+all x all y all z (r(x,y,z) <-> (s1(x,y)&s2(y,z)) | t(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+(((r(x,y,z) & r(x1,y,z1) & y!= $F)-> z=z1)
+&(s1(x,y)<-> exists z r(x,y,z) & y != $F)
+&(s2(y,z)<-> exists x r(x,y,z) & y != $F)
+&(t(x,y,z)<-> (r(x,y,z)) & y = $F))
+<->
+((t(x,y,z) -> y = $F)
+&(s1(x,y) -> y != $F)
+&(s2(y,z) -> y != $F)
+&((s2(y,z) & s(y,z1))-> z=z1)
+&(r(x,y,z) <-> (s1(x,y)&s2(y,z)) | t(x,y,z))).
+
+end_of_list.
+

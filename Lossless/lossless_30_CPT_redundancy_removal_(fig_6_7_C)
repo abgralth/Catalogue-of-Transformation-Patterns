@@ -1,0 +1,60 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Conceptual Transformation Patterns, removing a redundant inclusion dependency between R3 and R2
+
+%CONSTRAINT A
+all x all y (R1(x,y) -> exists z R2(x,z)).
+all x all z (R2(x,z) -> exists y R1(x,y)).
+
+all x all t (R3(x,t) -> exists y R1(x,y)).
+all x all t (R3(x,t) -> exists z R2(x,z)).
+
+%CONSTRAINT B
+all x all y (R1p(x,y) -> exists z R2p(x,z)).
+all x all z (R2p(x,z) -> exists y R1p(x,y)).
+
+all x all t (R3p(x,t) -> exists y R1p(x,y)).
+
+%MAPPINGS A TO B
+all x all y (R1p(x,y) <-> R1(x,y)).
+all x all z (R2p(x,z) <-> R2(x,z)).
+all x all t (R3p(x,t) <-> R3(x,t)).
+
+%MAPPINGS B TO A
+all x all y (R1(x,y) <-> R1p(x,y)).
+all x all z (R2(x,z) <-> R2p(x,z)).
+all x all t (R3(x,t) <-> R3p(x,t)).
+
+end_of_list.
+
+formulas(goals).
+
+((R1(x,y) -> exists z R2(x,z))
+&(R2(x,z) -> exists y R1(x,y))
+&(R3(x,t) -> exists y R1(x,y))
+&(R3(x,t) -> exists z R2(x,z))
+&(R1p(x,y) <-> R1(x,y))
+&(R2p(x,z) <-> R2(x,z))
+&(R3p(x,t) <-> R3(x,t)))
+<->
+((R1p(x,y) -> exists z R2p(x,z))
+&(R2p(x,z) -> exists y R1p(x,y))
+&(R3p(x,t) -> exists y R1p(x,y))
+&(R1(x,y) <-> R1p(x,y))
+&(R2(x,z) <-> R2p(x,z))
+&(R3(x,t) <-> R3p(x,t))).
+
+end_of_list.
+

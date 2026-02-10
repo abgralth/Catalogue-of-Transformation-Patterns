@@ -1,0 +1,55 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Lossless Pattern for Conditional Vertical Decomposition
+%The given mapping is an outer join between s and t since all t[y] should be present in s, but the opposite is not necessarily true.
+%As such, I tried a left outer join from s which does the union of (s & t) and (s / t X tz($F))
+
+%CONSTRAINT A
+%Conditional Functional Dependency Y->Z (Z != NULL)
+all x all y all z all x1 all z1 ((r(x,y,z) & r(x1,y,z1) & z!= $F)-> z=z1).
+
+%CONSTRAINT B
+%Guards
+all y all z (t(y,z) -> z != $F).
+
+%Inclusion Dependency
+all y all z (t(y,z) -> exists x s(x,y)).
+
+%Primary Key
+all y all z all z1 ((t(y,z) & t(y,z1))-> z=z1).
+
+%MAPPINGS A TO B
+all x all y (s(x,y) <-> exists  z r(x,y,z)).
+all y all z (t(y,z)<-> exists x r(x,y,z) & y != $F).
+
+%MAPPINGS B TO A
+%all x all y all z (r(x,y,z) <-> (s(x,y) & t(y,z)) | (s(x,y) & tn(z) & z = $F)).
+all x all y all z (r(x,y,z) <-> (s(x,y) & t(y,z)) | (s(x,y) & -t(y,z) & (tz(z) & z = $F))).
+
+end_of_list.
+
+formulas(goals).
+
+(((r(x,y,z) & r(x1,y,z1) & z!= $F)-> z=z1)
+&(t(y,z)<-> exists x r(x,y,z) & y != $F)
+&(s(x,y)<-> exists  z r(x,y,z)))
+<->
+((t(y,z) -> z != $F)
+&(t(y,z) -> exists x s(x,y))
+&((t(y,z) & t(y,z1))-> z=z1)
+&(r(x,y,z) <-> (s(x,y) & t(y,z)) | (s(x,y) & -t(y,z) & (tz(z) & z = $F)))).
+
+end_of_list.
+

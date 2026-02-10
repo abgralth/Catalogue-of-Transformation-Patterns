@@ -1,0 +1,42 @@
+% Saved by Prover9-Mace4 Version 0.5, December 2007.
+
+set(ignore_option_dependencies). % GUI handles dependencies
+
+if(Prover9). % Options for Prover9
+  assign(max_seconds, 60).
+end_if.
+
+if(Mace4).   % Options for Mace4
+  assign(max_seconds, 60).
+end_if.
+
+formulas(assumptions).
+
+%Conceptual Transformation Patterns, adding an intersection Ru of two tables R1,R2
+
+%CONSTRAINT A
+
+%CONSTRAINT B
+
+%MAPPINGS A TO B
+all x all y all z (R1p(x,y,z) <-> R1(x,y,z)).
+all x all y all z (R2p(x,y,z) <-> R2(x,y,z)).
+all x all y all z (Ru(x,y,z) <-> R1(x,y,z) & R2(x,y,z)).
+
+%MAPPINGS B TO A
+all x all y all z (R1(x,y,z) <-> R1p(x,y,z)).
+all x all y all z (R2(x,y,z) <-> R2p(x,y,z)).
+
+end_of_list.
+
+formulas(goals).
+
+((R1p(x,y,z) <-> R1(x,y,z))
+&(R2p(x,y,z) <-> R2(x,y,z))
+&(Ru(x,y,z) <-> R1(x,y,z) & R2(x,y,z)))
+<->
+((R1(x,y,z) <-> R1p(x,y,z))
+&(R2(x,y,z) <-> R2p(x,y,z))).
+
+end_of_list.
+
